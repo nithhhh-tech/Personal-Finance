@@ -31,9 +31,63 @@ npm run dev
 
 Open `http://127.0.0.1:8000`.
 
-## Production Database
+## Deploy on Render
 
-The app is ready to use a hosted SQL database. For most hosting providers, create a MySQL database and set these environment variables on your host:
+This repo includes Render-ready Docker files:
+
+- `Dockerfile`
+- `.dockerignore`
+- `docker/apache.conf`
+- `docker/start.sh`
+- `render.yaml`
+
+Render's Laravel guide recommends Docker + PostgreSQL for Laravel apps. The start script automatically runs:
+
+```bash
+php artisan migrate --force
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+```
+
+### Render Dashboard Steps
+
+1. Push the latest code to GitHub.
+2. In Render, create a new **PostgreSQL** database.
+3. Copy the database **Internal Database URL**.
+4. Create a new **Web Service** from this GitHub repository.
+5. Choose **Docker** as the runtime.
+6. Add these environment variables:
+
+```env
+APP_NAME=My Money Tracker
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://your-render-url.onrender.com
+APP_KEY=base64:paste-your-generated-key
+DB_CONNECTION=pgsql
+DB_URL=paste-render-internal-database-url
+SESSION_DRIVER=database
+QUEUE_CONNECTION=database
+CACHE_STORE=database
+LOG_CHANNEL=stderr
+```
+
+Generate `APP_KEY` locally with:
+
+```bash
+php artisan key:generate --show
+```
+
+7. Deploy the service. The Docker startup script will run migrations for the production database.
+
+You can also use the included `render.yaml` as a Render Blueprint. If you use the blueprint, Render will create the web service and database together, but you still need to set `APP_KEY` and `APP_URL`.
+
+## Other Hosting Database Notes
+
+For Render, use PostgreSQL with `DB_CONNECTION=pgsql` and `DB_URL` as shown above.
+
+If you later deploy on shared hosting or cPanel, you will probably use MySQL instead:
 
 ```env
 APP_ENV=production
@@ -49,8 +103,6 @@ SESSION_DRIVER=database
 QUEUE_CONNECTION=database
 CACHE_STORE=database
 ```
-
-If your host gives you PostgreSQL, use `DB_CONNECTION=pgsql` and port `5432` instead.
 
 After setting the production environment variables, run:
 
