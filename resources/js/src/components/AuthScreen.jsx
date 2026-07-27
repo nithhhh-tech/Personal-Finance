@@ -69,7 +69,7 @@ function LandingPage({ setMode }) {
 
     return (
         <main className="min-h-screen bg-[#2a1a12] px-4 py-6 text-[#f8efe3]">
-            <nav className="sticky top-4 z-20 mx-auto flex max-w-6xl items-center justify-between gap-4 rounded-lg border border-[#8f633e]/50 bg-[#3a251a]/85 px-4 py-3 shadow-lg shadow-black/10 backdrop-blur">
+            <nav className="sticky top-4 z-20 mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 rounded-lg border border-[#8f633e]/50 bg-[#3a251a]/85 px-4 py-3 shadow-lg shadow-black/10 backdrop-blur">
                 <div className="inline-flex items-center gap-3">
                     <div className="flex size-10 items-center justify-center rounded-md bg-[#d7a86e] text-[#2a1a12]">
                         <WalletCards size={22} />
@@ -79,10 +79,12 @@ function LandingPage({ setMode }) {
                         <p className="text-xs text-[#d9c4ad]">Daily Spend Tracker</p>
                     </div>
                 </div>
-                <div className="hidden items-center gap-1 rounded-md border border-[#8f633e]/40 bg-[#2a1a12]/45 p-1 lg:flex">
-                    <button type="button" onClick={() => scrollToSection('track')} className="h-9 rounded px-3 text-sm font-semibold text-[#d9c4ad] hover:bg-[#4a3022] hover:text-[#fff8ef]">Track</button>
+                <div className="order-last flex w-full items-center gap-1 overflow-x-auto rounded-md border border-[#8f633e]/40 bg-[#2a1a12]/45 p-1 lg:order-none lg:w-auto">
+                    <button type="button" onClick={() => scrollToSection('home')} className="h-9 shrink-0 rounded px-3 text-sm font-semibold text-[#d9c4ad] hover:bg-[#4a3022] hover:text-[#fff8ef]">Home</button>
+                    <button type="button" onClick={() => scrollToSection('features')} className="h-9 shrink-0 rounded px-3 text-sm font-semibold text-[#d9c4ad] hover:bg-[#4a3022] hover:text-[#fff8ef]">Features</button>
                     <button type="button" onClick={() => scrollToSection('flow')} className="h-9 rounded px-3 text-sm font-semibold text-[#d9c4ad] hover:bg-[#4a3022] hover:text-[#fff8ef]">How it works</button>
                     <button type="button" onClick={() => scrollToSection('privacy')} className="h-9 rounded px-3 text-sm font-semibold text-[#d9c4ad] hover:bg-[#4a3022] hover:text-[#fff8ef]">Private</button>
+                    <button type="button" onClick={() => scrollToSection('contact')} className="h-9 shrink-0 rounded px-3 text-sm font-semibold text-[#d9c4ad] hover:bg-[#4a3022] hover:text-[#fff8ef]">Contact</button>
                 </div>
                 <div className="flex items-center gap-2">
                     <button type="button" onClick={() => setMode('login')} className="hidden h-10 rounded-md border border-[#8f633e] px-4 text-sm font-semibold text-[#fff8ef] hover:bg-[#4a3022] sm:block">Login</button>
@@ -91,7 +93,7 @@ function LandingPage({ setMode }) {
                 </div>
             </nav>
 
-            <section className="mx-auto grid min-h-[calc(100vh-7.5rem)] max-w-6xl items-center gap-10 lg:grid-cols-[1fr_420px]">
+            <section id="home" className="mx-auto grid min-h-[calc(100vh-9.5rem)] scroll-mt-28 max-w-6xl items-center gap-10 lg:grid-cols-[1fr_420px]">
                 <div>
                     <div className="max-w-3xl">
                         <p className="inline-flex items-center gap-2 rounded-full border border-[#8f633e] bg-[#3a251a] px-4 py-2 text-sm font-semibold uppercase tracking-[0.16em] text-[#f2c38b]">
@@ -125,9 +127,9 @@ function LandingPage({ setMode }) {
                 </div>
             </section>
 
-            <section id="track" className="mx-auto grid scroll-mt-28 max-w-6xl gap-4 border-t border-[#8f633e]/30 py-12 md:grid-cols-3">
+            <section id="features" className="mx-auto grid scroll-mt-28 max-w-6xl gap-4 border-t border-[#8f633e]/30 py-12 md:grid-cols-3">
                 <div>
-                    <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#f2c38b]">Track</p>
+                    <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#f2c38b]">Features</p>
                     <h3 className="mt-3 text-3xl font-bold text-[#fff8ef]">Record the money story of each day.</h3>
                 </div>
                 <div className="rounded-lg border border-[#8f633e]/50 bg-[#3a251a]/70 p-5">
@@ -166,6 +168,18 @@ function LandingPage({ setMode }) {
                         <p className="mt-2 text-sm leading-6 text-[#d9c4ad]">The landing page stays clean. Your real wallets, income, spending, and balance appear only after you sign in.</p>
                     </div>
                     <button type="button" onClick={() => setMode('register')} className="h-11 rounded-md bg-[#d7a86e] px-5 font-bold text-[#2a1a12] hover:bg-[#e8bb82]">Start Tracking</button>
+                </div>
+            </section>
+
+            <section id="contact" className="mx-auto mb-12 grid scroll-mt-28 max-w-6xl gap-4 py-4 md:grid-cols-[1fr_1.2fr]">
+                <div>
+                    <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#f2c38b]">Contact</p>
+                    <h3 className="mt-3 text-3xl font-bold text-[#fff8ef]">Need to get back in?</h3>
+                    <p className="mt-2 text-sm leading-6 text-[#d9c4ad]">Use Login if you already have an account, or Register if this is your first time tracking your money here.</p>
+                </div>
+                <div className="flex flex-col gap-3 rounded-lg border border-[#8f633e]/50 bg-[#3a251a]/70 p-5 sm:flex-row sm:items-center sm:justify-end">
+                    <button type="button" onClick={() => setMode('login')} className="h-11 rounded-md border border-[#8f633e] px-5 font-semibold text-[#fff8ef] hover:bg-[#4a3022]">Login</button>
+                    <button type="button" onClick={() => setMode('register')} className="h-11 rounded-md bg-[#d7a86e] px-5 font-bold text-[#2a1a12] hover:bg-[#e8bb82]">Create Account</button>
                 </div>
             </section>
         </main>
