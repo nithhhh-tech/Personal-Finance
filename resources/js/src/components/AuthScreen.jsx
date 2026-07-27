@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ShieldCheck, WalletCards } from 'lucide-react';
+import { Coffee, ShieldCheck, WalletCards } from 'lucide-react';
 import { api } from '../lib/api.js';
 import { readError } from '../lib/format.js';
 import { Input, Select, WelcomePoint } from './ui.jsx';
@@ -64,37 +64,56 @@ export default function AuthScreen({ onAuthed }) {
 
 function LandingPage({ setMode }) {
     return (
-        <main className="min-h-screen app-bg px-4 py-8 text-[#172033]">
-            <section className="mx-auto flex min-h-[calc(100vh-4rem)] max-w-6xl flex-col justify-center">
-                <div className="inline-flex items-center gap-3">
-                    <div className="flex size-12 items-center justify-center rounded-lg bg-[#14211d] text-white">
-                        <WalletCards size={26} />
+        <main className="min-h-screen bg-[#2a1a12] px-4 py-8 text-[#f8efe3]">
+            <section className="mx-auto grid min-h-[calc(100vh-4rem)] max-w-6xl items-center gap-10 lg:grid-cols-[1fr_420px]">
+                <div>
+                    <div className="inline-flex items-center gap-3">
+                        <div className="flex size-12 items-center justify-center rounded-lg bg-[#d7a86e] text-[#2a1a12] shadow-lg shadow-black/20">
+                            <WalletCards size={26} />
+                        </div>
+                        <div>
+                            <h1 className="text-4xl font-bold tracking-normal">My Money Tracker</h1>
+                            <p className="text-[#d9c4ad]">Record earned money, spending, and what is left.</p>
+                        </div>
                     </div>
-                    <div>
-                        <h1 className="text-4xl font-bold tracking-normal">My Money Tracker</h1>
-                        <p className="text-slate-500">Record what you earned, what you spent, and what is left.</p>
+
+                    <div className="mt-14 max-w-3xl">
+                        <p className="inline-flex items-center gap-2 rounded-full border border-[#8f633e] bg-[#3a251a] px-4 py-2 text-sm font-semibold uppercase tracking-[0.16em] text-[#f2c38b]">
+                            <Coffee size={16} />
+                            Welcome
+                        </p>
+                        <h2 className="mt-5 text-6xl font-bold leading-tight tracking-normal text-[#fff8ef]">Track your money before it slips away.</h2>
+                        <p className="mt-5 max-w-2xl text-lg leading-8 text-[#d9c4ad]">A calm personal tracker for what you earn, what you spend, your wallets, and how much money is left each month.</p>
+                    </div>
+
+                    <div className="mt-8 flex flex-wrap gap-3">
+                        <button type="button" onClick={() => setMode('register')} className="h-12 rounded-md bg-[#d7a86e] px-6 font-bold text-[#2a1a12] shadow-lg shadow-black/20 hover:bg-[#e8bb82]">Get Started</button>
+                        <button type="button" onClick={() => setMode('login')} className="h-12 rounded-md border border-[#8f633e] bg-[#3a251a] px-6 font-semibold text-[#fff8ef] hover:bg-[#4a3022]">Login</button>
+                        <button type="button" onClick={() => setMode('register')} className="h-12 rounded-md border border-[#8f633e] px-6 font-semibold text-[#f2c38b] hover:bg-[#3a251a]">Register</button>
                     </div>
                 </div>
 
-                <div className="mt-12 grid items-center gap-8 lg:grid-cols-[1fr_430px]">
-                    <div>
-                        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-emerald-700">Welcome</p>
-                        <h2 className="mt-3 max-w-4xl text-6xl font-bold leading-tight tracking-normal text-[#14211d]">Know where your money goes before the month disappears.</h2>
-                        <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-600">A simple private tracker for daily earned money, spending records, wallets, and monthly money left.</p>
-                        <div className="mt-7 flex flex-wrap gap-3">
-                            <button type="button" onClick={() => setMode('register')} className="h-12 rounded-md bg-[#18b875] px-5 font-semibold text-white shadow-lg shadow-emerald-200/70 hover:bg-[#119662]">Create account</button>
-                            <button type="button" onClick={() => setMode('login')} className="h-12 rounded-md border border-slate-200 bg-white/90 px-5 font-semibold text-slate-800 shadow-sm hover:bg-white">Login</button>
+                <div className="rounded-lg border border-[#8f633e]/70 bg-[#3a251a]/90 p-6 shadow-2xl shadow-black/30 backdrop-blur">
+                    <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#f2c38b]">What you can track</p>
+                    <h3 className="mt-3 text-3xl font-bold text-[#fff8ef]">Simple daily money notes.</h3>
+                    <p className="mt-2 text-sm leading-6 text-[#d9c4ad]">No bank connection. No complicated accounting. Just your own records.</p>
+                    <div className="mt-6 space-y-3">
+                        <div className="rounded-md border border-[#8f633e]/60 bg-[#2a1a12]/70 p-4">
+                            <p className="font-semibold text-[#fff8ef]">Earned</p>
+                            <p className="mt-1 text-sm leading-6 text-[#d9c4ad]">Salary, freelance work, allowance, and any money coming in.</p>
+                        </div>
+                        <div className="rounded-md border border-[#8f633e]/60 bg-[#2a1a12]/70 p-4">
+                            <p className="font-semibold text-[#fff8ef]">Spent</p>
+                            <p className="mt-1 text-sm leading-6 text-[#d9c4ad]">Food, transport, bills, shopping, and everyday spending.</p>
+                        </div>
+                        <div className="rounded-md border border-[#8f633e]/60 bg-[#2a1a12]/70 p-4">
+                            <p className="font-semibold text-[#fff8ef]">Wallets</p>
+                            <p className="mt-1 text-sm leading-6 text-[#d9c4ad]">Cash, ABA, Wing, savings, or anywhere you keep money.</p>
                         </div>
                     </div>
-
-                    <div className="rounded-lg border border-white bg-white/95 p-6 shadow-xl shadow-slate-300/50 backdrop-blur">
-                        <p className="text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">What you can track</p>
-                        <div className="mt-6 space-y-3">
-                            <WelcomePoint title="Earned" text="Record salary, freelance work, allowance, or any money coming in." />
-                            <WelcomePoint title="Spent" text="Add food, transport, bills, shopping, and everyday spending." />
-                            <WelcomePoint title="Wallets" text="Track cash, ABA, Wing, savings, and any place you keep money." />
-                            <WelcomePoint title="Monthly left" text="See what remains after earned money minus spent money." />
-                        </div>
+                    <div className="mt-6 grid grid-cols-2 gap-3">
+                        <button type="button" onClick={() => setMode('register')} className="h-11 rounded-md bg-[#d7a86e] font-bold text-[#2a1a12] hover:bg-[#e8bb82]">Get Started</button>
+                        <button type="button" onClick={() => setMode('login')} className="h-11 rounded-md border border-[#8f633e] font-semibold text-[#fff8ef] hover:bg-[#4a3022]">Login</button>
                     </div>
                 </div>
             </section>
