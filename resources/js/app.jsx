@@ -69,14 +69,14 @@ function App() {
                 <div className="flex h-20 items-center gap-3 border-b border-white/10 px-6">
                     <div className="flex size-11 items-center justify-center rounded-lg bg-[#2fbf71] text-white shadow-lg shadow-emerald-950/30"><WalletCards size={24} /></div>
                     <div>
-                        <p className="text-lg font-semibold">PocketLedger</p>
-                        <p className="text-xs text-slate-400">Personal Finance</p>
+                        <p className="text-lg font-semibold">My Money Tracker</p>
+                        <p className="text-xs text-slate-400">Spend & Earn Tracker</p>
                     </div>
                 </div>
                 <nav className="space-y-2 p-4">
                     <NavButton icon={LayoutDashboard} label="Dashboard" active={activeView === 'dashboard'} onClick={() => setActiveView('dashboard')} />
-                    <NavButton icon={ReceiptText} label="Transactions" active={activeView === 'transactions'} onClick={() => setActiveView('transactions')} />
-                    <NavButton icon={WalletCards} label="Accounts" active={activeView === 'accounts'} onClick={() => setActiveView('accounts')} />
+                    <NavButton icon={ReceiptText} label="Money Records" active={activeView === 'transactions'} onClick={() => setActiveView('transactions')} />
+                    <NavButton icon={WalletCards} label="Wallets" active={activeView === 'accounts'} onClick={() => setActiveView('accounts')} />
                     <NavButton icon={Folder} label="Categories" active={activeView === 'categories'} onClick={() => setActiveView('categories')} />
                 </nav>
                 <div className="absolute bottom-0 left-0 right-0 border-t border-white/10 p-5">
@@ -151,22 +151,22 @@ function AuthScreen({ onAuthed }) {
                     <div className="inline-flex items-center gap-3">
                         <div className="flex size-12 items-center justify-center rounded-lg bg-[#111827] text-white"><WalletCards size={26} /></div>
                         <div>
-                            <h1 className="text-4xl font-semibold tracking-normal">PocketLedger</h1>
-                            <p className="text-slate-500">Daily money, monthly clarity.</p>
+                            <h1 className="text-4xl font-semibold tracking-normal">My Money Tracker</h1>
+                            <p className="text-slate-500">Know what you spent and how much you earned.</p>
                         </div>
                     </div>
                     <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-xl shadow-slate-200/70">
                         <div className="mb-5 flex items-center justify-between">
                             <div>
-                                <p className="text-sm text-slate-500">Current balance</p>
+                                <p className="text-sm text-slate-500">Money left</p>
                                 <p className="text-3xl font-semibold">$1,284.50</p>
                             </div>
                             <div className="rounded-md bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-700">+12.4%</div>
                         </div>
                         <div className="grid gap-3 sm:grid-cols-3">
-                            <PreviewStat label="Income" value="$620" tone="emerald" />
-                            <PreviewStat label="Expenses" value="$238" tone="rose" />
-                            <PreviewStat label="Savings" value="$382" tone="blue" />
+                            <PreviewStat label="Earned" value="$620" tone="emerald" />
+                            <PreviewStat label="Spent" value="$238" tone="rose" />
+                            <PreviewStat label="Left" value="$382" tone="blue" />
                         </div>
                         <div className="mt-5 grid gap-3">
                             <PreviewRow title="Lunch at work" meta="Food / ABA" value="-$5.50" tone="text-rose-700" />
@@ -208,12 +208,12 @@ function Dashboard({ summary, transactions, categories, accounts, onCreated }) {
                     <div className="grid gap-6 p-6 md:grid-cols-[1fr_260px]">
                         <div>
                             <div className="mb-6 inline-flex items-center gap-2 rounded-md bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-slate-300"><CalendarDays size={14} />Live overview</div>
-                            <p className="text-sm text-slate-400">Current balance</p>
+                            <p className="text-sm text-slate-400">Money left</p>
                             <p className="mt-2 text-5xl font-semibold tracking-normal">{money(summary?.current_balance)}</p>
                             <div className="mt-6 grid gap-3 sm:grid-cols-3">
-                                <DarkStat label="Income" value={money(summary?.monthly_income)} color="text-emerald-300" />
-                                <DarkStat label="Expenses" value={money(summary?.monthly_expense)} color="text-rose-300" />
-                                <DarkStat label="Savings" value={money(summary?.monthly_savings)} color="text-sky-300" />
+                                <DarkStat label="Earned" value={money(summary?.monthly_income)} color="text-emerald-300" />
+                                <DarkStat label="Spent" value={money(summary?.monthly_expense)} color="text-rose-300" />
+                                <DarkStat label="Left" value={money(summary?.monthly_savings)} color="text-sky-300" />
                             </div>
                         </div>
                         <div className="h-48 min-h-48">
@@ -232,29 +232,29 @@ function Dashboard({ summary, transactions, categories, accounts, onCreated }) {
                         </div>
                     </div>
                 </section>
-                <Panel title="Recent transactions">
+                <Panel title="Recent money records">
                     <div className="space-y-3">
-                        {transactions.length === 0 && <Empty text="Add your first transaction." />}
-                        {transactions.slice(0, 5).map((item) => <Row key={item.id} title={item.description || item.category?.name || 'Transaction'} meta={`${shortDate(item.transaction_date)} / ${item.account?.name || 'Account'}`} value={`${item.type === 'income' ? '+' : '-'}${money(item.base_amount)}`} tone={item.type === 'income' ? 'text-emerald-700' : 'text-rose-700'} />)}
+                        {transactions.length === 0 && <Empty text="Add your first money record." />}
+                        {transactions.slice(0, 5).map((item) => <Row key={item.id} title={item.description || item.category?.name || 'Transaction'} meta={`${shortDate(item.transaction_date)} / ${item.account?.name || 'Wallet'}`} value={`${item.type === 'income' ? '+' : '-'}${money(item.base_amount)}`} tone={item.type === 'income' ? 'text-emerald-700' : 'text-rose-700'} />)}
                     </div>
                 </Panel>
             </div>
 
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-                <Metric title="Today income" value={money(summary?.today_income)} icon={ArrowUpRight} tone="emerald" />
-                <Metric title="Today expense" value={money(summary?.today_expense)} icon={ArrowDownLeft} tone="rose" />
-                <Metric title="Monthly income" value={money(summary?.monthly_income)} icon={Banknote} tone="blue" />
-                <Metric title="Accounts" value={accounts.length} icon={WalletCards} tone="amber" />
+                <Metric title="Earned today" value={money(summary?.today_income)} icon={ArrowUpRight} tone="emerald" />
+                <Metric title="Spent today" value={money(summary?.today_expense)} icon={ArrowDownLeft} tone="rose" />
+                <Metric title="Earned this month" value={money(summary?.monthly_income)} icon={Banknote} tone="blue" />
+                <Metric title="Wallets" value={accounts.length} icon={WalletCards} tone="amber" />
             </div>
 
             <div className="grid gap-6 xl:grid-cols-[1fr_380px]">
-                <Panel title="Quick transaction"><TransactionForm accounts={accounts} categories={categories} onCreated={onCreated} /></Panel>
-                <Panel title="Account balances"><div className="space-y-3">{accounts.length === 0 && <Empty text="Create your first wallet or bank account." />}{accounts.map((account) => <Row key={account.id} title={account.name} meta={`${account.type} / ${account.currency}`} value={money(account.current_balance)} />)}</div></Panel>
+                <Panel title="Quick money record"><TransactionForm accounts={accounts} categories={categories} onCreated={onCreated} /></Panel>
+                <Panel title="Wallet balances"><div className="space-y-3">{accounts.length === 0 && <Empty text="Create your first cash wallet, ABA, Wing, or savings wallet." />}{accounts.map((account) => <Row key={account.id} title={account.name} meta={`${account.type} / ${account.currency}`} value={money(account.current_balance)} />)}</div></Panel>
             </div>
 
             <div className="grid gap-6 xl:grid-cols-2">
-                <Panel title="Income vs expense"><ChartBox><ResponsiveContainer width="100%" height="100%"><BarChart data={monthlyData}><CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" /><XAxis dataKey="name" tickLine={false} axisLine={false} /><YAxis tickLine={false} axisLine={false} /><Tooltip formatter={(value) => money(value)} contentStyle={{ borderRadius: 8, borderColor: '#e2e8f0' }} /><Bar dataKey="income" fill="#22c55e" radius={[5, 5, 0, 0]} /><Bar dataKey="expense" fill="#f43f5e" radius={[5, 5, 0, 0]} /></BarChart></ResponsiveContainer></ChartBox></Panel>
-                <Panel title="Spending by category"><ChartBox>{categoryData.length ? <ResponsiveContainer width="100%" height="100%"><PieChart><Pie data={categoryData} dataKey="total" nameKey="name" innerRadius={62} outerRadius={92} paddingAngle={4}>{categoryData.map((entry) => <Cell key={entry.name} fill={entry.color} />)}</Pie><Tooltip formatter={(value) => money(value)} contentStyle={{ borderRadius: 8, borderColor: '#e2e8f0' }} /></PieChart></ResponsiveContainer> : <Empty text="Add expenses to see category insights." />}</ChartBox></Panel>
+                <Panel title="Earned vs spent"><ChartBox><ResponsiveContainer width="100%" height="100%"><BarChart data={monthlyData}><CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" /><XAxis dataKey="name" tickLine={false} axisLine={false} /><YAxis tickLine={false} axisLine={false} /><Tooltip formatter={(value) => money(value)} contentStyle={{ borderRadius: 8, borderColor: '#e2e8f0' }} /><Bar dataKey="income" fill="#22c55e" radius={[5, 5, 0, 0]} /><Bar dataKey="expense" fill="#f43f5e" radius={[5, 5, 0, 0]} /></BarChart></ResponsiveContainer></ChartBox></Panel>
+                <Panel title="Spent by category"><ChartBox>{categoryData.length ? <ResponsiveContainer width="100%" height="100%"><PieChart><Pie data={categoryData} dataKey="total" nameKey="name" innerRadius={62} outerRadius={92} paddingAngle={4}>{categoryData.map((entry) => <Cell key={entry.name} fill={entry.color} />)}</Pie><Tooltip formatter={(value) => money(value)} contentStyle={{ borderRadius: 8, borderColor: '#e2e8f0' }} /></PieChart></ResponsiveContainer> : <Empty text="Add spending records to see where money goes." />}</ChartBox></Panel>
             </div>
         </div>
     );
@@ -265,13 +265,13 @@ function Transactions({ transactions, accounts, categories, onCreated }) {
     const filtered = transactions.filter((item) => (item.description || '').toLowerCase().includes(search.toLowerCase()) || item.category?.name?.toLowerCase().includes(search.toLowerCase()));
     return (
         <div className="grid gap-6 xl:grid-cols-[400px_1fr]">
-            <Panel title="Add transaction"><TransactionForm accounts={accounts} categories={categories} onCreated={onCreated} /></Panel>
-            <Panel title="Transaction history">
+            <Panel title="Add money record"><TransactionForm accounts={accounts} categories={categories} onCreated={onCreated} /></Panel>
+            <Panel title="Money record history">
                 <div className="mb-4 flex h-11 items-center gap-2 rounded-md border border-slate-200 bg-slate-50 px-3">
                     <Search size={18} className="text-slate-400" />
-                    <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search transactions" className="w-full bg-transparent outline-none" />
+                    <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search money records" className="w-full bg-transparent outline-none" />
                 </div>
-                <div className="space-y-3">{filtered.length === 0 && <Empty text="No transactions yet." />}{filtered.map((item) => <Row key={item.id} title={item.description || item.category?.name || 'Transaction'} meta={`${shortDate(item.transaction_date)} / ${item.account?.name || 'Account'} / ${item.category?.name || 'Category'}`} value={`${item.type === 'income' ? '+' : '-'}${money(item.base_amount)}`} tone={item.type === 'income' ? 'text-emerald-700' : 'text-rose-700'} />)}</div>
+                <div className="space-y-3">{filtered.length === 0 && <Empty text="No money records yet." />}{filtered.map((item) => <Row key={item.id} title={item.description || item.category?.name || 'Transaction'} meta={`${shortDate(item.transaction_date)} / ${item.account?.name || 'Wallet'} / ${item.category?.name || 'Category'}`} value={`${item.type === 'income' ? '+' : '-'}${money(item.base_amount)}`} tone={item.type === 'income' ? 'text-emerald-700' : 'text-rose-700'} />)}</div>
             </Panel>
         </div>
     );
@@ -279,12 +279,12 @@ function Transactions({ transactions, accounts, categories, onCreated }) {
 
 function Accounts({ accounts, onCreated }) {
     const [form, setForm] = useState({ name: '', type: 'cash', currency: 'USD', starting_balance: 0 });
-    return <CrudPanel title="New account" onSubmit={async () => { await api.post('/accounts', form); setForm({ name: '', type: 'cash', currency: 'USD', starting_balance: 0 }); onCreated(); }} fields={<><Input label="Name" value={form.name} onChange={(name) => setForm({ ...form, name })} /><Select label="Type" value={form.type} onChange={(type) => setForm({ ...form, type })} options={[["cash", "Cash"], ["bank", "Bank"], ["wallet", "Wallet"], ["savings", "Savings"]]} /><Select label="Currency" value={form.currency} onChange={(currency) => setForm({ ...form, currency })} options={[["USD", "USD"], ["KHR", "KHR"]]} /><Input label="Starting balance" type="number" value={form.starting_balance} onChange={(starting_balance) => setForm({ ...form, starting_balance })} /></>} listTitle="Accounts" items={accounts.map((account) => ({ id: account.id, title: account.name, meta: `${account.type} / ${account.currency}`, value: money(account.current_balance) }))} />;
+    return <CrudPanel title="New wallet" onSubmit={async () => { await api.post('/accounts', form); setForm({ name: '', type: 'cash', currency: 'USD', starting_balance: 0 }); onCreated(); }} fields={<><Input label="Name" value={form.name} onChange={(name) => setForm({ ...form, name })} /><Select label="Type" value={form.type} onChange={(type) => setForm({ ...form, type })} options={[["cash", "Cash"], ["aba", "ABA"], ["wing", "Wing"], ["wallet", "Wallet"], ["savings", "Savings"]]} /><Select label="Currency" value={form.currency} onChange={(currency) => setForm({ ...form, currency })} options={[["USD", "USD"], ["KHR", "KHR"]]} /><Input label="Starting balance" type="number" value={form.starting_balance} onChange={(starting_balance) => setForm({ ...form, starting_balance })} /></>} listTitle="Wallets" items={accounts.map((account) => ({ id: account.id, title: account.name, meta: `${account.type} / ${account.currency}`, value: money(account.current_balance) }))} />;
 }
 
 function Categories({ categories, onCreated }) {
     const [form, setForm] = useState({ name: '', type: 'expense', color: '#2563eb' });
-    return <CrudPanel title="New category" onSubmit={async () => { await api.post('/categories', form); setForm({ name: '', type: 'expense', color: '#2563eb' }); onCreated(); }} fields={<><Input label="Name" value={form.name} onChange={(name) => setForm({ ...form, name })} /><Select label="Type" value={form.type} onChange={(type) => setForm({ ...form, type })} options={[["expense", "Expense"], ["income", "Income"]]} /><Input label="Color" type="color" value={form.color} onChange={(color) => setForm({ ...form, color })} /></>} listTitle="Categories" items={categories.map((category) => ({ id: category.id, title: category.name, meta: category.type, value: category.color }))} />;
+    return <CrudPanel title="New category" onSubmit={async () => { await api.post('/categories', form); setForm({ name: '', type: 'expense', color: '#2563eb' }); onCreated(); }} fields={<><Input label="Name" value={form.name} onChange={(name) => setForm({ ...form, name })} /><Select label="Type" value={form.type} onChange={(type) => setForm({ ...form, type })} options={[["expense", "Spent"], ["income", "Earned"]]} /><Input label="Color" type="color" value={form.color} onChange={(color) => setForm({ ...form, color })} /></>} listTitle="Categories" items={categories.map((category) => ({ id: category.id, title: category.name, meta: category.type, value: category.color }))} />;
 }
 
 function TransactionForm({ accounts, categories, onCreated }) {
@@ -309,18 +309,18 @@ function TransactionForm({ accounts, categories, onCreated }) {
 
     return (
         <form onSubmit={submit} className="space-y-4">
-            {accounts.length === 0 && <Empty text="Add an account before recording transactions." />}
+            {accounts.length === 0 && <Empty text="Add a wallet before recording money." />}
             <div className="grid gap-4 sm:grid-cols-2">
-                <Select label="Type" value={form.type} onChange={(type) => setForm({ ...form, type, category_id: '' })} options={[["expense", "Expense"], ["income", "Income"]]} />
-                <Input label="Amount" type="number" value={form.amount} onChange={(amount) => setForm({ ...form, amount })} />
-                <Select label="Account" value={form.account_id} onChange={(account_id) => setForm({ ...form, account_id })} options={accounts.map((account) => [account.id, account.name])} />
+                <Select label="Type" value={form.type} onChange={(type) => setForm({ ...form, type, category_id: '' })} options={[["expense", "Spent"], ["income", "Earned"]]} />
+                <Input label="Amount earned/spent" type="number" value={form.amount} onChange={(amount) => setForm({ ...form, amount })} />
+                <Select label="Wallet" value={form.account_id} onChange={(account_id) => setForm({ ...form, account_id })} options={accounts.map((account) => [account.id, account.name])} />
                 <Select label="Category" value={form.category_id} onChange={(category_id) => setForm({ ...form, category_id })} options={availableCategories.map((category) => [category.id, category.name])} />
                 <Input label="Date" type="date" value={form.transaction_date} onChange={(transaction_date) => setForm({ ...form, transaction_date })} />
                 <Input label="Payment method" value={form.payment_method} onChange={(payment_method) => setForm({ ...form, payment_method })} />
             </div>
             <label className="block text-sm font-semibold text-slate-700">Note<textarea value={form.description} onChange={(event) => setForm({ ...form, description: event.target.value })} className="mt-1 min-h-24 w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2 outline-none transition focus:border-[#2fbf71] focus:bg-white focus:ring-4 focus:ring-emerald-100" /></label>
             {error && <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
-            <button disabled={accounts.length === 0} className="inline-flex h-11 items-center gap-2 rounded-md bg-[#2fbf71] px-4 font-semibold text-white shadow-lg shadow-emerald-200 hover:bg-[#269f60] disabled:cursor-not-allowed disabled:opacity-50"><Plus size={18} />Save transaction</button>
+            <button disabled={accounts.length === 0} className="inline-flex h-11 items-center gap-2 rounded-md bg-[#2fbf71] px-4 font-semibold text-white shadow-lg shadow-emerald-200 hover:bg-[#269f60] disabled:cursor-not-allowed disabled:opacity-50"><Plus size={18} />Save money record</button>
         </form>
     );
 }
@@ -355,8 +355,10 @@ function buildMonthlyData(transactions) {
     return Array.from(map.values()).slice(0, 10).reverse();
 }
 
-function viewTitle(view) { return { dashboard: 'Dashboard', transactions: 'Transactions', accounts: 'Accounts', categories: 'Categories' }[view] || 'Dashboard'; }
+function viewTitle(view) { return { dashboard: 'Dashboard', transactions: 'Money Records', accounts: 'Wallets', categories: 'Categories' }[view] || 'Dashboard'; }
 function shortDate(value) { return value ? value.slice(0, 10) : today; }
 function readError(error) { const data = error.response?.data; if (data?.errors) return Object.values(data.errors).flat()[0]; if (data?.message) return data.message; return 'Something went wrong. Please try again.'; }
 
 createRoot(document.getElementById('root')).render(<App />);
+
+
