@@ -3,6 +3,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { ArrowDownLeft, ArrowUpRight, Banknote, CalendarDays, Folder, LayoutDashboard, LogOut, Plus, ReceiptText, RefreshCw, Search, ShieldCheck, WalletCards } from 'lucide-react';
+import '@fontsource-variable/inter';
 import '../css/app.css';
 
 const api = axios.create({ baseURL: '/api', headers: { Accept: 'application/json' } });
@@ -64,13 +65,13 @@ function App() {
     if (!token) return <AuthScreen onAuthed={saveToken} />;
 
     return (
-        <div className="min-h-screen bg-[#eef2f6] text-slate-950">
-            <aside className="fixed inset-y-0 left-0 hidden w-72 bg-[#111827] text-white lg:block">
+        <div className="min-h-screen app-bg text-[#172033]">
+            <aside className="fixed inset-y-0 left-0 hidden w-72 bg-[#14211d] text-white lg:block">
                 <div className="flex h-20 items-center gap-3 border-b border-white/10 px-6">
-                    <div className="flex size-11 items-center justify-center rounded-lg bg-[#2fbf71] text-white shadow-lg shadow-emerald-950/30"><WalletCards size={24} /></div>
+                    <div className="flex size-11 items-center justify-center rounded-lg bg-[#18b875] text-white shadow-lg shadow-emerald-950/30 ring-1 ring-white/15"><WalletCards size={24} /></div>
                     <div>
                         <p className="text-lg font-semibold">My Money Tracker</p>
-                        <p className="text-xs text-slate-400">Spend & Earn Tracker</p>
+                        <p className="text-xs text-slate-400">Daily Spend Tracker</p>
                     </div>
                 </div>
                 <nav className="space-y-2 p-4">
@@ -83,20 +84,20 @@ function App() {
                     <div className="rounded-lg bg-white/[0.06] p-4">
                         <p className="text-xs font-medium uppercase tracking-[0.18em] text-slate-400">This Month</p>
                         <p className="mt-2 text-2xl font-semibold">{money(summary?.monthly_savings)}</p>
-                        <p className="mt-1 text-xs text-slate-400">Income minus expenses</p>
+                        <p className="mt-1 text-xs text-slate-400">Earned minus spent</p>
                     </div>
                 </div>
             </aside>
 
             <main className="lg:pl-72">
-                <header className="sticky top-0 z-20 flex min-h-20 flex-wrap items-center justify-between gap-4 border-b border-slate-200 bg-white/85 px-4 py-4 backdrop-blur-xl lg:px-8">
+                <header className="sticky top-0 z-20 flex min-h-20 flex-wrap items-center justify-between gap-4 border-b border-slate-200/80 bg-white/88 shadow-sm px-4 py-4 backdrop-blur-xl lg:px-8">
                     <div>
                         <p className="text-sm font-medium text-slate-500">Welcome back, {user?.name || 'friend'}</p>
                         <h1 className="text-2xl font-semibold tracking-normal">{viewTitle(activeView)}</h1>
                     </div>
                     <div className="flex items-center gap-2">
-                        <button onClick={loadAll} className="inline-flex h-10 items-center gap-2 rounded-md border border-slate-200 bg-white px-3 text-sm font-semibold shadow-sm hover:bg-slate-50"><RefreshCw size={16} />Refresh</button>
-                        <button onClick={() => logout()} className="inline-flex h-10 items-center gap-2 rounded-md bg-[#111827] px-3 text-sm font-semibold text-white shadow-sm hover:bg-slate-800"><LogOut size={16} />Logout</button>
+                        <button onClick={loadAll} className="inline-flex h-10 items-center gap-2 rounded-md border border-slate-200 bg-white px-3 text-sm font-semibold shadow-sm hover:bg-[#f7f9fb]"><RefreshCw size={16} />Refresh</button>
+                        <button onClick={() => logout()} className="inline-flex h-10 items-center gap-2 rounded-md bg-[#14211d] px-3 text-sm font-semibold text-white shadow-sm hover:bg-slate-800"><LogOut size={16} />Logout</button>
                     </div>
                 </header>
 
@@ -109,7 +110,7 @@ function App() {
                     </div>
                 </div>
 
-                <section className="mx-auto max-w-7xl px-4 py-6 lg:px-8">
+                <section className="mx-auto max-w-7xl px-4 py-7 lg:px-8">
                     {notice && <div className="mb-4 rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 shadow-sm">{notice}</div>}
                     {loading && <div className="mb-4 rounded-md border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600 shadow-sm">Loading latest finance data...</div>}
                     {activeView === 'dashboard' && <Dashboard summary={summary} transactions={transactions} categories={categories} accounts={accounts} onCreated={loadAll} />}
@@ -145,17 +146,17 @@ function AuthScreen({ onAuthed }) {
     }
 
     return (
-        <main className="min-h-screen bg-[#edf2f6] px-4 py-8 text-slate-950">
+        <main className="min-h-screen app-bg px-4 py-8 text-[#172033]">
             <div className="mx-auto grid min-h-[calc(100vh-4rem)] max-w-6xl items-center gap-8 lg:grid-cols-[1fr_440px]">
                 <section className="space-y-7">
                     <div className="inline-flex items-center gap-3">
-                        <div className="flex size-12 items-center justify-center rounded-lg bg-[#111827] text-white"><WalletCards size={26} /></div>
+                        <div className="flex size-12 items-center justify-center rounded-lg bg-[#14211d] text-white"><WalletCards size={26} /></div>
                         <div>
-                            <h1 className="text-4xl font-semibold tracking-normal">My Money Tracker</h1>
-                            <p className="text-slate-500">Know what you spent and how much you earned.</p>
+                            <h1 className="text-4xl font-bold tracking-normal">My Money Tracker</h1>
+                            <p className="text-slate-500">Record what you earned, what you spent, and what is left.</p>
                         </div>
                     </div>
-                    <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-xl shadow-slate-200/70">
+                    <div className="rounded-lg border border-white bg-white/92 p-5 shadow-xl shadow-slate-300/50 backdrop-blur">
                         <div className="mb-5 flex items-center justify-between">
                             <div>
                                 <p className="text-sm text-slate-500">Money left</p>
@@ -170,13 +171,13 @@ function AuthScreen({ onAuthed }) {
                         </div>
                         <div className="mt-5 grid gap-3">
                             <PreviewRow title="Lunch at work" meta="Food / ABA" value="-$5.50" tone="text-rose-700" />
-                            <PreviewRow title="Freelance payment" meta="Income / Bank" value="+$120.00" tone="text-emerald-700" />
-                            <PreviewRow title="Gasoline" meta="Transport / Cash" value="-$8.00" tone="text-rose-700" />
+                            <PreviewRow title="Salary / freelance money" meta="Earned / ABA" value="+$120.00" tone="text-emerald-700" />
+                            <PreviewRow title="Moto gas" meta="Transport / Cash" value="-$8.00" tone="text-rose-700" />
                         </div>
                     </div>
                 </section>
 
-                <form onSubmit={submit} className="rounded-lg border border-slate-200 bg-white p-6 shadow-xl shadow-slate-200/70">
+                <form onSubmit={submit} className="rounded-lg border border-white bg-white/95 p-6 shadow-xl shadow-slate-300/50 backdrop-blur">
                     <div className="mb-6 flex rounded-md bg-slate-100 p-1">
                         <button type="button" onClick={() => setMode('login')} className={`flex-1 rounded px-3 py-2 text-sm font-semibold ${mode === 'login' ? 'bg-white text-slate-950 shadow-sm' : 'text-slate-500'}`}>Login</button>
                         <button type="button" onClick={() => setMode('register')} className={`flex-1 rounded px-3 py-2 text-sm font-semibold ${mode === 'register' ? 'bg-white text-slate-950 shadow-sm' : 'text-slate-500'}`}>Register</button>
@@ -188,7 +189,7 @@ function AuthScreen({ onAuthed }) {
                         {mode === 'register' && <Select label="Base currency" value={form.base_currency} onChange={(base_currency) => setForm({ ...form, base_currency })} options={[["USD", "USD"], ["KHR", "KHR"]]} />}
                     </div>
                     {error && <p className="mt-4 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
-                    <button disabled={submitting} className="mt-6 h-12 w-full rounded-md bg-[#2fbf71] px-4 font-semibold text-white shadow-lg shadow-emerald-200 hover:bg-[#269f60] disabled:cursor-not-allowed disabled:opacity-60">{submitting ? 'Please wait...' : mode === 'login' ? 'Login' : 'Create account'}</button>
+                    <button disabled={submitting} className="mt-6 h-12 w-full rounded-md bg-[#18b875] px-4 font-semibold text-white shadow-lg shadow-emerald-200/70 hover:bg-[#119662] disabled:cursor-not-allowed disabled:opacity-60">{submitting ? 'Please wait...' : mode === 'login' ? 'Login' : 'Create account'}</button>
                     <div className="mt-5 flex items-center gap-2 text-xs text-slate-500"><ShieldCheck size={15} />Protected by Laravel Sanctum tokens</div>
                 </form>
             </div>
@@ -204,12 +205,12 @@ function Dashboard({ summary, transactions, categories, accounts, onCreated }) {
     return (
         <div className="space-y-6">
             <div className="grid gap-4 xl:grid-cols-[1.25fr_0.75fr]">
-                <section className="overflow-hidden rounded-lg bg-[#111827] text-white shadow-xl shadow-slate-300/60">
+                <section className="overflow-hidden rounded-lg bg-[#14211d] text-white shadow-xl shadow-slate-300/60">
                     <div className="grid gap-6 p-6 md:grid-cols-[1fr_260px]">
                         <div>
                             <div className="mb-6 inline-flex items-center gap-2 rounded-md bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-slate-300"><CalendarDays size={14} />Live overview</div>
                             <p className="text-sm text-slate-400">Money left</p>
-                            <p className="mt-2 text-5xl font-semibold tracking-normal">{money(summary?.current_balance)}</p>
+                            <p className="mt-2 text-5xl font-bold tracking-normal">{money(summary?.current_balance)}</p>
                             <div className="mt-6 grid gap-3 sm:grid-cols-3">
                                 <DarkStat label="Earned" value={money(summary?.monthly_income)} color="text-emerald-300" />
                                 <DarkStat label="Spent" value={money(summary?.monthly_expense)} color="text-rose-300" />
@@ -267,7 +268,7 @@ function Transactions({ transactions, accounts, categories, onCreated }) {
         <div className="grid gap-6 xl:grid-cols-[400px_1fr]">
             <Panel title="Add money record"><TransactionForm accounts={accounts} categories={categories} onCreated={onCreated} /></Panel>
             <Panel title="Money record history">
-                <div className="mb-4 flex h-11 items-center gap-2 rounded-md border border-slate-200 bg-slate-50 px-3">
+                <div className="mb-4 flex h-11 items-center gap-2 rounded-md border border-slate-200 bg-[#f7f9fb] px-3">
                     <Search size={18} className="text-slate-400" />
                     <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search money records" className="w-full bg-transparent outline-none" />
                 </div>
@@ -318,9 +319,9 @@ function TransactionForm({ accounts, categories, onCreated }) {
                 <Input label="Date" type="date" value={form.transaction_date} onChange={(transaction_date) => setForm({ ...form, transaction_date })} />
                 <Input label="Payment method" value={form.payment_method} onChange={(payment_method) => setForm({ ...form, payment_method })} />
             </div>
-            <label className="block text-sm font-semibold text-slate-700">Note<textarea value={form.description} onChange={(event) => setForm({ ...form, description: event.target.value })} className="mt-1 min-h-24 w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2 outline-none transition focus:border-[#2fbf71] focus:bg-white focus:ring-4 focus:ring-emerald-100" /></label>
+            <label className="block text-sm font-semibold text-slate-700">Note<textarea value={form.description} onChange={(event) => setForm({ ...form, description: event.target.value })} className="mt-1 min-h-24 w-full rounded-md border border-slate-200 bg-[#f7f9fb] px-3 py-2 outline-none transition focus:border-[#18b875] focus:bg-white focus:ring-4 focus:ring-emerald-100" /></label>
             {error && <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
-            <button disabled={accounts.length === 0} className="inline-flex h-11 items-center gap-2 rounded-md bg-[#2fbf71] px-4 font-semibold text-white shadow-lg shadow-emerald-200 hover:bg-[#269f60] disabled:cursor-not-allowed disabled:opacity-50"><Plus size={18} />Save money record</button>
+            <button disabled={accounts.length === 0} className="inline-flex h-11 items-center gap-2 rounded-md bg-[#18b875] px-4 font-semibold text-white shadow-lg shadow-emerald-200/70 hover:bg-[#119662] disabled:cursor-not-allowed disabled:opacity-50"><Plus size={18} />Save money record</button>
         </form>
     );
 }
@@ -328,21 +329,21 @@ function TransactionForm({ accounts, categories, onCreated }) {
 function CrudPanel({ title, fields, onSubmit, listTitle, items }) {
     const [error, setError] = useState('');
     async function submit(event) { event.preventDefault(); setError(''); try { await onSubmit(); } catch (err) { setError(readError(err)); } }
-    return <div className="grid gap-6 xl:grid-cols-[400px_1fr]"><Panel title={title}><form onSubmit={submit} className="space-y-4">{fields}{error && <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}<button className="inline-flex h-11 items-center gap-2 rounded-md bg-[#2fbf71] px-4 font-semibold text-white shadow-lg shadow-emerald-200 hover:bg-[#269f60]"><Plus size={18} />Create</button></form></Panel><Panel title={listTitle}><div className="space-y-3">{items.length === 0 && <Empty text="Nothing here yet." />}{items.map((item) => <Row key={item.id} title={item.title} meta={item.meta} value={item.value} />)}</div></Panel></div>;
+    return <div className="grid gap-6 xl:grid-cols-[400px_1fr]"><Panel title={title}><form onSubmit={submit} className="space-y-4">{fields}{error && <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}<button className="inline-flex h-11 items-center gap-2 rounded-md bg-[#18b875] px-4 font-semibold text-white shadow-lg shadow-emerald-200/70 hover:bg-[#119662]"><Plus size={18} />Create</button></form></Panel><Panel title={listTitle}><div className="space-y-3">{items.length === 0 && <Empty text="Nothing here yet." />}{items.map((item) => <Row key={item.id} title={item.title} meta={item.meta} value={item.value} />)}</div></Panel></div>;
 }
 
-function Panel({ title, children }) { return <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-lg shadow-slate-200/70"><div className="mb-4 flex items-center justify-between"><h2 className="text-base font-semibold">{title}</h2></div>{children}</section>; }
+function Panel({ title, children }) { return <section className="rounded-lg border border-white bg-white/94 p-5 shadow-lg shadow-slate-300/45 backdrop-blur"><div className="mb-4 flex items-center justify-between"><h2 className="text-base font-semibold">{title}</h2></div>{children}</section>; }
 function ChartBox({ children }) { return <div className="h-72 min-h-72 w-full">{children}</div>; }
-function Empty({ text }) { return <div className="rounded-md border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center text-sm text-slate-500">{text}</div>; }
+function Empty({ text }) { return <div className="rounded-md border border-dashed border-slate-300 bg-[#f7f9fb] px-4 py-6 text-center text-sm text-slate-500">{text}</div>; }
 function NavButton({ icon: Icon, label, active, onClick }) { return <button onClick={onClick} className={`flex h-11 w-full items-center gap-3 rounded-md px-3 text-left text-sm font-semibold transition ${active ? 'bg-white text-[#111827]' : 'text-slate-300 hover:bg-white/10 hover:text-white'}`}><Icon size={18} />{label}</button>; }
-function MiniNav({ icon: Icon, active, onClick }) { return <button onClick={onClick} className={`flex h-11 items-center justify-center rounded-md ${active ? 'bg-[#111827] text-white' : 'bg-slate-100 text-slate-600'}`}><Icon size={18} /></button>; }
+function MiniNav({ icon: Icon, active, onClick }) { return <button onClick={onClick} className={`flex h-11 items-center justify-center rounded-md ${active ? 'bg-[#14211d] text-white' : 'bg-slate-100 text-slate-600'}`}><Icon size={18} /></button>; }
 function PreviewStat({ label, value, tone }) { const colors = { emerald: 'text-emerald-700 bg-emerald-50', rose: 'text-rose-700 bg-rose-50', blue: 'text-blue-700 bg-blue-50' }; return <div className={`rounded-md px-3 py-3 ${colors[tone]}`}><p className="text-xs font-semibold uppercase tracking-[0.14em] opacity-70">{label}</p><p className="mt-1 text-lg font-semibold">{value}</p></div>; }
 function PreviewRow({ title, meta, value, tone }) { return <div className="flex items-center justify-between rounded-md border border-slate-200 px-3 py-3"><div><p className="font-medium">{title}</p><p className="text-sm text-slate-500">{meta}</p></div><p className={`font-semibold ${tone}`}>{value}</p></div>; }
 function DarkStat({ label, value, color }) { return <div className="rounded-md bg-white/10 p-3"><p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">{label}</p><p className={`mt-1 text-lg font-semibold ${color}`}>{value}</p></div>; }
-function Metric({ title, value, icon: Icon, tone }) { const colors = { emerald: 'bg-emerald-50 text-emerald-700', blue: 'bg-blue-50 text-blue-700', rose: 'bg-rose-50 text-rose-700', amber: 'bg-amber-50 text-amber-700' }; return <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-lg shadow-slate-200/70"><div className="flex items-center justify-between"><p className="text-sm font-medium text-slate-500">{title}</p><div className={`flex size-10 items-center justify-center rounded-md ${colors[tone]}`}><Icon size={20} /></div></div><p className="mt-4 text-2xl font-semibold tracking-normal">{value}</p></div>; }
-function Row({ title, meta, value, tone = 'text-slate-900' }) { return <div className="flex items-center justify-between gap-4 rounded-md border border-slate-200 bg-white px-4 py-3 transition hover:border-slate-300 hover:bg-slate-50"><div className="min-w-0"><p className="truncate font-semibold">{title}</p><p className="truncate text-sm text-slate-500">{meta}</p></div><p className={`shrink-0 font-semibold ${tone}`}>{value}</p></div>; }
-function Input({ label, value, onChange, type = 'text' }) { return <label className="block text-sm font-semibold text-slate-700">{label}<input type={type} value={value} onChange={(event) => onChange(event.target.value)} className="mt-1 h-11 w-full rounded-md border border-slate-200 bg-slate-50 px-3 outline-none transition focus:border-[#2fbf71] focus:bg-white focus:ring-4 focus:ring-emerald-100" /></label>; }
-function Select({ label, value, onChange, options }) { return <label className="block text-sm font-semibold text-slate-700">{label}<select value={value} onChange={(event) => onChange(event.target.value)} className="mt-1 h-11 w-full rounded-md border border-slate-200 bg-slate-50 px-3 outline-none transition focus:border-[#2fbf71] focus:bg-white focus:ring-4 focus:ring-emerald-100">{options.map(([optionValue, optionLabel]) => <option key={optionValue} value={optionValue}>{optionLabel}</option>)}</select></label>; }
+function Metric({ title, value, icon: Icon, tone }) { const colors = { emerald: 'bg-emerald-50 text-emerald-700', blue: 'bg-blue-50 text-blue-700', rose: 'bg-rose-50 text-rose-700', amber: 'bg-amber-50 text-amber-700' }; return <div className="rounded-lg border border-white bg-white/94 p-5 shadow-lg shadow-slate-300/45 backdrop-blur"><div className="flex items-center justify-between"><p className="text-sm font-medium text-slate-500">{title}</p><div className={`flex size-10 items-center justify-center rounded-md ${colors[tone]}`}><Icon size={20} /></div></div><p className="mt-4 text-2xl font-semibold tracking-normal">{value}</p></div>; }
+function Row({ title, meta, value, tone = 'text-slate-900' }) { return <div className="flex items-center justify-between gap-4 rounded-md border border-slate-200 bg-white px-4 py-3 transition hover:border-slate-300 hover:bg-[#f7f9fb]"><div className="min-w-0"><p className="truncate font-semibold">{title}</p><p className="truncate text-sm text-slate-500">{meta}</p></div><p className={`shrink-0 font-semibold ${tone}`}>{value}</p></div>; }
+function Input({ label, value, onChange, type = 'text' }) { return <label className="block text-sm font-semibold text-slate-700">{label}<input type={type} value={value} onChange={(event) => onChange(event.target.value)} className="mt-1 h-11 w-full rounded-md border border-slate-200 bg-[#f7f9fb] px-3 outline-none transition focus:border-[#18b875] focus:bg-white focus:ring-4 focus:ring-emerald-100" /></label>; }
+function Select({ label, value, onChange, options }) { return <label className="block text-sm font-semibold text-slate-700">{label}<select value={value} onChange={(event) => onChange(event.target.value)} className="mt-1 h-11 w-full rounded-md border border-slate-200 bg-[#f7f9fb] px-3 outline-none transition focus:border-[#18b875] focus:bg-white focus:ring-4 focus:ring-emerald-100">{options.map(([optionValue, optionLabel]) => <option key={optionValue} value={optionValue}>{optionLabel}</option>)}</select></label>; }
 
 function buildMonthlyData(transactions) {
     const map = new Map();
@@ -360,5 +361,6 @@ function shortDate(value) { return value ? value.slice(0, 10) : today; }
 function readError(error) { const data = error.response?.data; if (data?.errors) return Object.values(data.errors).flat()[0]; if (data?.message) return data.message; return 'Something went wrong. Please try again.'; }
 
 createRoot(document.getElementById('root')).render(<App />);
+
 
 
