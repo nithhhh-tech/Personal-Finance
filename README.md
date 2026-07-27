@@ -87,6 +87,22 @@ Keep the Neon `sslmode=require` value in your connection string.
 
 This repo still includes `render.yaml` if you later return to Render. For Render, use PostgreSQL and Docker, then set `APP_KEY`, `APP_URL`, `DB_CONNECTION=pgsql`, and `DB_URL`.
 
+On Render, paste the database **Internal Database URL** into `DB_URL`.
+
+Correct:
+
+```env
+DB_CONNECTION=pgsql
+DB_URL=postgresql://user:password@host:5432/database
+```
+
+Wrong:
+
+```env
+DB_CONNECTION=pgsql
+DB_DATABASE=paste-render-internal-database-url-here
+```
+
 ## Other Hosting Database Notes
 
 For Render, use PostgreSQL with `DB_CONNECTION=pgsql` and `DB_URL` as shown above.
