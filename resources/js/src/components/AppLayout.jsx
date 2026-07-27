@@ -66,7 +66,7 @@ export default function AppLayout({
                                     activeView === "transactions" ? 2.2 : 1.8
                                 }
                             />
-                            <span>Money Records</span>
+                            <span>Records</span>
                         </button>
                         <button
                             onClick={() => setActiveView("accounts")}

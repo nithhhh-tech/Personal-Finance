@@ -256,7 +256,7 @@ h1, h2, h3, .top-header-title, .brand-name, .auth-hero-balance, .card-title, .na
     border: none;
     background: transparent;
     color: var(--apple-sub);
-    font-size: 13.5px;
+    font-size: 10.5px;
     font-weight: 600;
     transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     cursor: pointer;
