@@ -124,7 +124,7 @@ function App() {
 }
 
 function AuthScreen({ onAuthed }) {
-    const [mode, setMode] = useState('login');
+    const [mode, setMode] = useState('welcome');
     const [form, setForm] = useState({ name: '', email: '', password: '', base_currency: 'USD' });
     const [error, setError] = useState('');
     const [submitting, setSubmitting] = useState(false);
@@ -156,6 +156,15 @@ function AuthScreen({ onAuthed }) {
                             <p className="text-slate-500">Record what you earned, what you spent, and what is left.</p>
                         </div>
                     </div>
+                    <div className="max-w-2xl">
+                        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-emerald-700">Welcome</p>
+                        <h2 className="mt-3 text-5xl font-bold leading-tight tracking-normal text-[#14211d]">Know exactly where your money goes.</h2>
+                        <p className="mt-4 max-w-xl text-lg leading-8 text-slate-600">Add what you earned, record what you spent, and check your wallet balance without opening a spreadsheet.</p>
+                        <div className="mt-6 flex flex-wrap gap-3">
+                            <button type="button" onClick={() => setMode('register')} className="h-12 rounded-md bg-[#18b875] px-5 font-semibold text-white shadow-lg shadow-emerald-200/70 hover:bg-[#119662]">Create account</button>
+                            <button type="button" onClick={() => setMode('login')} className="h-12 rounded-md border border-slate-200 bg-white/90 px-5 font-semibold text-slate-800 shadow-sm hover:bg-white">Login</button>
+                        </div>
+                    </div>
                     <div className="rounded-lg border border-white bg-white/92 p-5 shadow-xl shadow-slate-300/50 backdrop-blur">
                         <div className="mb-5 flex items-center justify-between">
                             <div>
@@ -177,21 +186,40 @@ function AuthScreen({ onAuthed }) {
                     </div>
                 </section>
 
-                <form onSubmit={submit} className="rounded-lg border border-white bg-white/95 p-6 shadow-xl shadow-slate-300/50 backdrop-blur">
-                    <div className="mb-6 flex rounded-md bg-slate-100 p-1">
-                        <button type="button" onClick={() => setMode('login')} className={`flex-1 rounded px-3 py-2 text-sm font-semibold ${mode === 'login' ? 'bg-white text-slate-950 shadow-sm' : 'text-slate-500'}`}>Login</button>
-                        <button type="button" onClick={() => setMode('register')} className={`flex-1 rounded px-3 py-2 text-sm font-semibold ${mode === 'register' ? 'bg-white text-slate-950 shadow-sm' : 'text-slate-500'}`}>Register</button>
-                    </div>
-                    <div className="space-y-4">
-                        {mode === 'register' && <Input label="Name" value={form.name} onChange={(name) => setForm({ ...form, name })} />}
-                        <Input label="Email" type="email" value={form.email} onChange={(email) => setForm({ ...form, email })} />
-                        <Input label="Password" type="password" value={form.password} onChange={(password) => setForm({ ...form, password })} />
-                        {mode === 'register' && <Select label="Base currency" value={form.base_currency} onChange={(base_currency) => setForm({ ...form, base_currency })} options={[["USD", "USD"], ["KHR", "KHR"]]} />}
-                    </div>
-                    {error && <p className="mt-4 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
-                    <button disabled={submitting} className="mt-6 h-12 w-full rounded-md bg-[#18b875] px-4 font-semibold text-white shadow-lg shadow-emerald-200/70 hover:bg-[#119662] disabled:cursor-not-allowed disabled:opacity-60">{submitting ? 'Please wait...' : mode === 'login' ? 'Login' : 'Create account'}</button>
-                    <div className="mt-5 flex items-center gap-2 text-xs text-slate-500"><ShieldCheck size={15} />Protected by Laravel Sanctum tokens</div>
-                </form>
+                {mode === 'welcome' ? (
+                    <section className="rounded-lg border border-white bg-white/95 p-6 shadow-xl shadow-slate-300/50 backdrop-blur">
+                        <p className="text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">Start tracking</p>
+                        <h2 className="mt-3 text-3xl font-bold tracking-normal text-[#14211d]">Your money, written down clearly.</h2>
+                        <div className="mt-6 space-y-3">
+                            <WelcomePoint title="Earned" text="Record salary, freelance work, allowance, or any money coming in." />
+                            <WelcomePoint title="Spent" text="Add food, transport, bills, shopping, and everyday spending." />
+                            <WelcomePoint title="Left" text="See the balance left across cash, ABA, Wing, and savings wallets." />
+                        </div>
+                        <button type="button" onClick={() => setMode('register')} className="mt-6 h-12 w-full rounded-md bg-[#18b875] px-4 font-semibold text-white shadow-lg shadow-emerald-200/70 hover:bg-[#119662]">Create your tracker</button>
+                        <button type="button" onClick={() => setMode('login')} className="mt-3 h-12 w-full rounded-md border border-slate-200 bg-white px-4 font-semibold text-slate-800 hover:bg-slate-50">I already have an account</button>
+                    </section>
+                ) : (
+                    <form onSubmit={submit} className="rounded-lg border border-white bg-white/95 p-6 shadow-xl shadow-slate-300/50 backdrop-blur">
+                        <button type="button" onClick={() => setMode('welcome')} className="mb-5 text-sm font-semibold text-slate-500 hover:text-slate-900">Back to welcome</button>
+                        <div className="mb-6">
+                            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-emerald-700">{mode === 'login' ? 'Login' : 'Create account'}</p>
+                            <h2 className="mt-2 text-3xl font-bold tracking-normal text-[#14211d]">{mode === 'login' ? 'Welcome back' : 'Start your money tracker'}</h2>
+                        </div>
+                        <div className="mb-6 flex rounded-md bg-slate-100 p-1">
+                            <button type="button" onClick={() => setMode('login')} className={`flex-1 rounded px-3 py-2 text-sm font-semibold ${mode === 'login' ? 'bg-white text-slate-950 shadow-sm' : 'text-slate-500'}`}>Login</button>
+                            <button type="button" onClick={() => setMode('register')} className={`flex-1 rounded px-3 py-2 text-sm font-semibold ${mode === 'register' ? 'bg-white text-slate-950 shadow-sm' : 'text-slate-500'}`}>Register</button>
+                        </div>
+                        <div className="space-y-4">
+                            {mode === 'register' && <Input label="Name" value={form.name} onChange={(name) => setForm({ ...form, name })} />}
+                            <Input label="Email" type="email" value={form.email} onChange={(email) => setForm({ ...form, email })} />
+                            <Input label="Password" type="password" value={form.password} onChange={(password) => setForm({ ...form, password })} />
+                            {mode === 'register' && <Select label="Base currency" value={form.base_currency} onChange={(base_currency) => setForm({ ...form, base_currency })} options={[["USD", "USD"], ["KHR", "KHR"]]} />}
+                        </div>
+                        {error && <p className="mt-4 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
+                        <button disabled={submitting} className="mt-6 h-12 w-full rounded-md bg-[#18b875] px-4 font-semibold text-white shadow-lg shadow-emerald-200/70 hover:bg-[#119662] disabled:cursor-not-allowed disabled:opacity-60">{submitting ? 'Please wait...' : mode === 'login' ? 'Login' : 'Create account'}</button>
+                        <div className="mt-5 flex items-center gap-2 text-xs text-slate-500"><ShieldCheck size={15} />Protected by Laravel Sanctum tokens</div>
+                    </form>
+                )}
             </div>
         </main>
     );
@@ -337,6 +365,7 @@ function ChartBox({ children }) { return <div className="h-72 min-h-72 w-full">{
 function Empty({ text }) { return <div className="rounded-md border border-dashed border-slate-300 bg-[#f7f9fb] px-4 py-6 text-center text-sm text-slate-500">{text}</div>; }
 function NavButton({ icon: Icon, label, active, onClick }) { return <button onClick={onClick} className={`flex h-11 w-full items-center gap-3 rounded-md px-3 text-left text-sm font-semibold transition ${active ? 'bg-white text-[#111827]' : 'text-slate-300 hover:bg-white/10 hover:text-white'}`}><Icon size={18} />{label}</button>; }
 function MiniNav({ icon: Icon, active, onClick }) { return <button onClick={onClick} className={`flex h-11 items-center justify-center rounded-md ${active ? 'bg-[#14211d] text-white' : 'bg-slate-100 text-slate-600'}`}><Icon size={18} /></button>; }
+function WelcomePoint({ title, text }) { return <div className="rounded-md border border-slate-200 bg-[#f7f9fb] p-4"><p className="font-semibold text-[#14211d]">{title}</p><p className="mt-1 text-sm leading-6 text-slate-600">{text}</p></div>; }
 function PreviewStat({ label, value, tone }) { const colors = { emerald: 'text-emerald-700 bg-emerald-50', rose: 'text-rose-700 bg-rose-50', blue: 'text-blue-700 bg-blue-50' }; return <div className={`rounded-md px-3 py-3 ${colors[tone]}`}><p className="text-xs font-semibold uppercase tracking-[0.14em] opacity-70">{label}</p><p className="mt-1 text-lg font-semibold">{value}</p></div>; }
 function PreviewRow({ title, meta, value, tone }) { return <div className="flex items-center justify-between rounded-md border border-slate-200 px-3 py-3"><div><p className="font-medium">{title}</p><p className="text-sm text-slate-500">{meta}</p></div><p className={`font-semibold ${tone}`}>{value}</p></div>; }
 function DarkStat({ label, value, color }) { return <div className="rounded-md bg-white/10 p-3"><p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">{label}</p><p className={`mt-1 text-lg font-semibold ${color}`}>{value}</p></div>; }
