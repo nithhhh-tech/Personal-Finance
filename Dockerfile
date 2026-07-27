@@ -43,6 +43,6 @@ RUN php artisan package:discover --ansi \
     && chown -R www-data:www-data storage bootstrap/cache \
     && chmod +x /usr/local/bin/start.sh
 
-EXPOSE 10000
+EXPOSE 8000
 
 CMD ["start.sh"]

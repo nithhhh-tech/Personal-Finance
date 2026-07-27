@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-export PORT="${PORT:-10000}"
+export PORT="${PORT:-8000}"
 
 if [ -n "$DATABASE_URL" ] && [ -z "$DB_URL" ]; then
     export DB_URL="$DATABASE_URL"

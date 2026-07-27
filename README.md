@@ -31,17 +31,16 @@ npm run dev
 
 Open `http://127.0.0.1:8000`.
 
-## Deploy on Render
+## Deploy on Koyeb + Neon
 
-This repo includes Render-ready Docker files:
+This repo includes Docker files that work for Koyeb:
 
 - `Dockerfile`
 - `.dockerignore`
 - `docker/apache.conf`
 - `docker/start.sh`
-- `render.yaml`
 
-Render's Laravel guide recommends Docker + PostgreSQL for Laravel apps. The start script automatically runs:
+The start script automatically runs:
 
 ```bash
 php artisan migrate --force
@@ -50,23 +49,24 @@ php artisan route:cache
 php artisan view:cache
 ```
 
-### Render Dashboard Steps
+### Koyeb Dashboard Steps
 
 1. Push the latest code to GitHub.
-2. In Render, create a new **PostgreSQL** database.
-3. Copy the database **Internal Database URL**.
-4. Create a new **Web Service** from this GitHub repository.
-5. Choose **Docker** as the runtime.
+2. In Neon, create a free PostgreSQL project.
+3. Copy the Neon **connection string** for the production branch.
+4. In Koyeb, create a new **Web Service** from this GitHub repository.
+5. Choose **Dockerfile** as the builder.
+6. Expose port `8000` with HTTP route `/`.
 6. Add these environment variables:
 
 ```env
 APP_NAME=My Money Tracker
 APP_ENV=production
 APP_DEBUG=false
-APP_URL=https://your-render-url.onrender.com
+APP_URL=https://your-koyeb-url.koyeb.app
 APP_KEY=base64:paste-your-generated-key
 DB_CONNECTION=pgsql
-DB_URL=paste-render-internal-database-url
+DB_URL=paste-neon-connection-string
 SESSION_DRIVER=database
 QUEUE_CONNECTION=database
 CACHE_STORE=database
@@ -81,7 +81,11 @@ php artisan key:generate --show
 
 7. Deploy the service. The Docker startup script will run migrations for the production database.
 
-You can also use the included `render.yaml` as a Render Blueprint. If you use the blueprint, Render will create the web service and database together, but you still need to set `APP_KEY` and `APP_URL`.
+Keep the Neon `sslmode=require` value in your connection string.
+
+## Deploy on Render
+
+This repo still includes `render.yaml` if you later return to Render. For Render, use PostgreSQL and Docker, then set `APP_KEY`, `APP_URL`, `DB_CONNECTION=pgsql`, and `DB_URL`.
 
 ## Other Hosting Database Notes
 
