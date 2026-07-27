@@ -64,32 +64,33 @@ export default function AuthScreen({ onAuthed }) {
 
 function LandingPage({ setMode }) {
     return (
-        <main className="min-h-screen bg-[#2a1a12] px-4 py-8 text-[#f8efe3]">
-            <section className="mx-auto grid min-h-[calc(100vh-4rem)] max-w-6xl items-center gap-10 lg:grid-cols-[1fr_420px]">
-                <div>
-                    <div className="inline-flex items-center gap-3">
-                        <div className="flex size-12 items-center justify-center rounded-lg bg-[#d7a86e] text-[#2a1a12] shadow-lg shadow-black/20">
-                            <WalletCards size={26} />
-                        </div>
-                        <div>
-                            <h1 className="text-4xl font-bold tracking-normal">My Money Tracker</h1>
-                            <p className="text-[#d9c4ad]">Record earned money, spending, and what is left.</p>
-                        </div>
+        <main className="min-h-screen bg-[#2a1a12] px-4 py-6 text-[#f8efe3]">
+            <nav className="mx-auto flex max-w-6xl items-center justify-between gap-4 rounded-lg border border-[#8f633e]/50 bg-[#3a251a]/70 px-4 py-3 shadow-lg shadow-black/10 backdrop-blur">
+                <div className="inline-flex items-center gap-3">
+                    <div className="flex size-10 items-center justify-center rounded-md bg-[#d7a86e] text-[#2a1a12]">
+                        <WalletCards size={22} />
                     </div>
+                    <div>
+                        <p className="font-bold leading-5 text-[#fff8ef]">My Money Tracker</p>
+                        <p className="text-xs text-[#d9c4ad]">Daily Spend Tracker</p>
+                    </div>
+                </div>
+                <div className="flex items-center gap-2">
+                    <button type="button" onClick={() => setMode('login')} className="hidden h-10 rounded-md border border-[#8f633e] px-4 text-sm font-semibold text-[#fff8ef] hover:bg-[#4a3022] sm:block">Login</button>
+                    <button type="button" onClick={() => setMode('register')} className="hidden h-10 rounded-md border border-[#8f633e] px-4 text-sm font-semibold text-[#f2c38b] hover:bg-[#4a3022] sm:block">Register</button>
+                    <button type="button" onClick={() => setMode('register')} className="h-10 rounded-md bg-[#d7a86e] px-4 text-sm font-bold text-[#2a1a12] hover:bg-[#e8bb82]">Get Started</button>
+                </div>
+            </nav>
 
-                    <div className="mt-14 max-w-3xl">
+            <section className="mx-auto grid min-h-[calc(100vh-7.5rem)] max-w-6xl items-center gap-10 lg:grid-cols-[1fr_420px]">
+                <div>
+                    <div className="max-w-3xl">
                         <p className="inline-flex items-center gap-2 rounded-full border border-[#8f633e] bg-[#3a251a] px-4 py-2 text-sm font-semibold uppercase tracking-[0.16em] text-[#f2c38b]">
                             <Coffee size={16} />
                             Welcome
                         </p>
                         <h2 className="mt-5 text-6xl font-bold leading-tight tracking-normal text-[#fff8ef]">Track your money before it slips away.</h2>
                         <p className="mt-5 max-w-2xl text-lg leading-8 text-[#d9c4ad]">A calm personal tracker for what you earn, what you spend, your wallets, and how much money is left each month.</p>
-                    </div>
-
-                    <div className="mt-8 flex flex-wrap gap-3">
-                        <button type="button" onClick={() => setMode('register')} className="h-12 rounded-md bg-[#d7a86e] px-6 font-bold text-[#2a1a12] shadow-lg shadow-black/20 hover:bg-[#e8bb82]">Get Started</button>
-                        <button type="button" onClick={() => setMode('login')} className="h-12 rounded-md border border-[#8f633e] bg-[#3a251a] px-6 font-semibold text-[#fff8ef] hover:bg-[#4a3022]">Login</button>
-                        <button type="button" onClick={() => setMode('register')} className="h-12 rounded-md border border-[#8f633e] px-6 font-semibold text-[#f2c38b] hover:bg-[#3a251a]">Register</button>
                     </div>
                 </div>
 
@@ -111,10 +112,7 @@ function LandingPage({ setMode }) {
                             <p className="mt-1 text-sm leading-6 text-[#d9c4ad]">Cash, ABA, Wing, savings, or anywhere you keep money.</p>
                         </div>
                     </div>
-                    <div className="mt-6 grid grid-cols-2 gap-3">
-                        <button type="button" onClick={() => setMode('register')} className="h-11 rounded-md bg-[#d7a86e] font-bold text-[#2a1a12] hover:bg-[#e8bb82]">Get Started</button>
-                        <button type="button" onClick={() => setMode('login')} className="h-11 rounded-md border border-[#8f633e] font-semibold text-[#fff8ef] hover:bg-[#4a3022]">Login</button>
-                    </div>
+                    <button type="button" onClick={() => setMode('register')} className="mt-6 h-11 w-full rounded-md bg-[#d7a86e] font-bold text-[#2a1a12] hover:bg-[#e8bb82]">Get Started</button>
                 </div>
             </section>
         </main>
