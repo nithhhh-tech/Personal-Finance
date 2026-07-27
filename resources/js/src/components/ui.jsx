@@ -53,33 +53,6 @@ export function WelcomePoint({ title, text }) {
     );
 }
 
-export function PreviewStat({ label, value, tone }) {
-    const colors = {
-        emerald: 'text-emerald-700 bg-emerald-50',
-        rose: 'text-rose-700 bg-rose-50',
-        blue: 'text-blue-700 bg-blue-50',
-    };
-
-    return (
-        <div className={`rounded-md px-3 py-3 ${colors[tone]}`}>
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] opacity-70">{label}</p>
-            <p className="mt-1 text-lg font-semibold">{value}</p>
-        </div>
-    );
-}
-
-export function PreviewRow({ title, meta, value, tone }) {
-    return (
-        <div className="flex items-center justify-between rounded-md border border-slate-200 px-3 py-3">
-            <div>
-                <p className="font-medium">{title}</p>
-                <p className="text-sm text-slate-500">{meta}</p>
-            </div>
-            <p className={`font-semibold ${tone}`}>{value}</p>
-        </div>
-    );
-}
-
 export function DarkStat({ label, value, color }) {
     return (
         <div className="rounded-md bg-white/10 p-3">

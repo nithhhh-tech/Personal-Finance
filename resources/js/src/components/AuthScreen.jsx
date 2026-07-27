@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ShieldCheck, WalletCards } from 'lucide-react';
 import { api } from '../lib/api.js';
 import { readError } from '../lib/format.js';
-import { Input, PreviewRow, PreviewStat, Select, WelcomePoint } from './ui.jsx';
+import { Input, Select, WelcomePoint } from './ui.jsx';
 
 export default function AuthScreen({ onAuthed }) {
     const [mode, setMode] = useState('welcome');
@@ -27,9 +27,13 @@ export default function AuthScreen({ onAuthed }) {
         }
     }
 
+    if (mode === 'welcome') {
+        return <LandingPage setMode={setMode} />;
+    }
+
     return (
         <main className="min-h-screen app-bg px-4 py-8 text-[#172033]">
-            <div className="mx-auto grid min-h-[calc(100vh-4rem)] max-w-6xl items-center gap-8 lg:grid-cols-[1fr_440px]">
+            <div className="mx-auto grid min-h-[calc(100vh-4rem)] max-w-5xl items-center gap-8 lg:grid-cols-[1fr_440px]">
                 <section className="space-y-7">
                     <div className="inline-flex items-center gap-3">
                         <div className="flex size-12 items-center justify-center rounded-lg bg-[#14211d] text-white">
@@ -41,54 +45,70 @@ export default function AuthScreen({ onAuthed }) {
                         </div>
                     </div>
                     <div className="max-w-2xl">
-                        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-emerald-700">Welcome</p>
-                        <h2 className="mt-3 text-5xl font-bold leading-tight tracking-normal text-[#14211d]">Know exactly where your money goes.</h2>
-                        <p className="mt-4 max-w-xl text-lg leading-8 text-slate-600">Add what you earned, record what you spent, and check your wallet balance without opening a spreadsheet.</p>
+                        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-emerald-700">{mode === 'login' ? 'Login' : 'Create account'}</p>
+                        <h2 className="mt-3 text-5xl font-bold leading-tight tracking-normal text-[#14211d]">{mode === 'login' ? 'Welcome back.' : 'Start tracking your money.'}</h2>
+                        <p className="mt-4 max-w-xl text-lg leading-8 text-slate-600">{mode === 'login' ? 'Sign in to continue recording what you earned, what you spent, and what is left.' : 'Create your private tracker and start with your first wallet and money record.'}</p>
                         <div className="mt-6 flex flex-wrap gap-3">
                             <button type="button" onClick={() => setMode('register')} className="h-12 rounded-md bg-[#18b875] px-5 font-semibold text-white shadow-lg shadow-emerald-200/70 hover:bg-[#119662]">Create account</button>
                             <button type="button" onClick={() => setMode('login')} className="h-12 rounded-md border border-slate-200 bg-white/90 px-5 font-semibold text-slate-800 shadow-sm hover:bg-white">Login</button>
                         </div>
                     </div>
-                    <div className="rounded-lg border border-white bg-white/92 p-5 shadow-xl shadow-slate-300/50 backdrop-blur">
-                        <div className="mb-5 flex items-center justify-between">
-                            <div>
-                                <p className="text-sm text-slate-500">Money left</p>
-                                <p className="text-3xl font-semibold">$1,284.50</p>
-                            </div>
-                            <div className="rounded-md bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-700">+12.4%</div>
-                        </div>
-                        <div className="grid gap-3 sm:grid-cols-3">
-                            <PreviewStat label="Earned" value="$620" tone="emerald" />
-                            <PreviewStat label="Spent" value="$238" tone="rose" />
-                            <PreviewStat label="Left" value="$382" tone="blue" />
-                        </div>
-                        <div className="mt-5 grid gap-3">
-                            <PreviewRow title="Lunch at work" meta="Food / ABA" value="-$5.50" tone="text-rose-700" />
-                            <PreviewRow title="Salary / freelance money" meta="Earned / ABA" value="+$120.00" tone="text-emerald-700" />
-                            <PreviewRow title="Moto gas" meta="Transport / Cash" value="-$8.00" tone="text-rose-700" />
-                        </div>
-                    </div>
+                    <WelcomeFeatureGrid />
                 </section>
 
-                {mode === 'welcome' ? <WelcomeCard setMode={setMode} /> : <AuthForm error={error} form={form} mode={mode} setForm={setForm} setMode={setMode} submit={submit} submitting={submitting} />}
+                <AuthForm error={error} form={form} mode={mode} setForm={setForm} setMode={setMode} submit={submit} submitting={submitting} />
             </div>
         </main>
     );
 }
 
-function WelcomeCard({ setMode }) {
+function LandingPage({ setMode }) {
     return (
-        <section className="rounded-lg border border-white bg-white/95 p-6 shadow-xl shadow-slate-300/50 backdrop-blur">
-            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">Start tracking</p>
-            <h2 className="mt-3 text-3xl font-bold tracking-normal text-[#14211d]">Your money, written down clearly.</h2>
-            <div className="mt-6 space-y-3">
-                <WelcomePoint title="Earned" text="Record salary, freelance work, allowance, or any money coming in." />
-                <WelcomePoint title="Spent" text="Add food, transport, bills, shopping, and everyday spending." />
-                <WelcomePoint title="Left" text="See the balance left across cash, ABA, Wing, and savings wallets." />
-            </div>
-            <button type="button" onClick={() => setMode('register')} className="mt-6 h-12 w-full rounded-md bg-[#18b875] px-4 font-semibold text-white shadow-lg shadow-emerald-200/70 hover:bg-[#119662]">Create your tracker</button>
-            <button type="button" onClick={() => setMode('login')} className="mt-3 h-12 w-full rounded-md border border-slate-200 bg-white px-4 font-semibold text-slate-800 hover:bg-slate-50">I already have an account</button>
-        </section>
+        <main className="min-h-screen app-bg px-4 py-8 text-[#172033]">
+            <section className="mx-auto flex min-h-[calc(100vh-4rem)] max-w-6xl flex-col justify-center">
+                <div className="inline-flex items-center gap-3">
+                    <div className="flex size-12 items-center justify-center rounded-lg bg-[#14211d] text-white">
+                        <WalletCards size={26} />
+                    </div>
+                    <div>
+                        <h1 className="text-4xl font-bold tracking-normal">My Money Tracker</h1>
+                        <p className="text-slate-500">Record what you earned, what you spent, and what is left.</p>
+                    </div>
+                </div>
+
+                <div className="mt-12 grid items-center gap-8 lg:grid-cols-[1fr_430px]">
+                    <div>
+                        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-emerald-700">Welcome</p>
+                        <h2 className="mt-3 max-w-4xl text-6xl font-bold leading-tight tracking-normal text-[#14211d]">Know where your money goes before the month disappears.</h2>
+                        <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-600">A simple private tracker for daily earned money, spending records, wallets, and monthly money left.</p>
+                        <div className="mt-7 flex flex-wrap gap-3">
+                            <button type="button" onClick={() => setMode('register')} className="h-12 rounded-md bg-[#18b875] px-5 font-semibold text-white shadow-lg shadow-emerald-200/70 hover:bg-[#119662]">Create account</button>
+                            <button type="button" onClick={() => setMode('login')} className="h-12 rounded-md border border-slate-200 bg-white/90 px-5 font-semibold text-slate-800 shadow-sm hover:bg-white">Login</button>
+                        </div>
+                    </div>
+
+                    <div className="rounded-lg border border-white bg-white/95 p-6 shadow-xl shadow-slate-300/50 backdrop-blur">
+                        <p className="text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">What you can track</p>
+                        <div className="mt-6 space-y-3">
+                            <WelcomePoint title="Earned" text="Record salary, freelance work, allowance, or any money coming in." />
+                            <WelcomePoint title="Spent" text="Add food, transport, bills, shopping, and everyday spending." />
+                            <WelcomePoint title="Wallets" text="Track cash, ABA, Wing, savings, and any place you keep money." />
+                            <WelcomePoint title="Monthly left" text="See what remains after earned money minus spent money." />
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    );
+}
+
+function WelcomeFeatureGrid() {
+    return (
+        <div className="grid gap-3 sm:grid-cols-3">
+            <WelcomePoint title="Earned" text="Money coming in." />
+            <WelcomePoint title="Spent" text="Money going out." />
+            <WelcomePoint title="Left" text="Your remaining balance." />
+        </div>
     );
 }
 
