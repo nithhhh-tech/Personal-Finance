@@ -12,8 +12,8 @@
 }
 
 :root {
-    color: #172033;
-    background: #eef2f6;
+    color: #f8efe3;
+    background: #2a1a12;
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
 }
 
@@ -28,10 +28,10 @@ body {
 }
 
 .app-bg {
-    background-color: #eef2f6;
+    background-color: #2a1a12;
     background-image:
-        linear-gradient(135deg, rgba(20, 33, 29, 0.05) 0 1px, transparent 1px),
-        linear-gradient(180deg, #f8fafc 0%, #eef2f6 46%, #f7f5ef 100%);
+        linear-gradient(135deg, rgba(215, 168, 110, 0.055) 0 1px, transparent 1px),
+        linear-gradient(180deg, #2a1a12 0%, #321f16 46%, #24160f 100%);
     background-size: 24px 24px, auto;
 }
 
@@ -49,8 +49,8 @@ input[type='number']::-webkit-outer-spin-button {
 }
 
 ::selection {
-    background: #bbf7d0;
-    color: #14211d;
+    background: #d7a86e;
+    color: #2a1a12;
 }
 
 ::-webkit-scrollbar {
@@ -59,11 +59,27 @@ input[type='number']::-webkit-outer-spin-button {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #b9c4d2;
+    background: #8f633e;
     border-radius: 999px;
-    border: 2px solid #eef2f6;
+    border: 2px solid #2a1a12;
 }
 
 .recharts-wrapper text {
     font-family: var(--font-sans);
+}
+
+.auth-drawer-panel {
+    animation: auth-drawer-in 260ms ease-out both;
+}
+
+@keyframes auth-drawer-in {
+    from {
+        opacity: 0;
+        transform: translateX(-90px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
 }

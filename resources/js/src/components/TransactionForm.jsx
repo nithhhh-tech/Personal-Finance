@@ -54,16 +54,16 @@ export default function TransactionForm({ accounts, categories, onCreated }) {
                 <Input label="Date" type="date" value={form.transaction_date} onChange={(transaction_date) => setForm({ ...form, transaction_date })} />
                 <Input label="Payment method" value={form.payment_method} onChange={(payment_method) => setForm({ ...form, payment_method })} />
             </div>
-            <label className="block text-sm font-semibold text-slate-700">
+            <label className="block text-sm font-semibold text-[#d9c4ad]">
                 Note
                 <textarea
                     value={form.description}
                     onChange={(event) => setForm({ ...form, description: event.target.value })}
-                    className="mt-1 min-h-24 w-full rounded-md border border-slate-200 bg-[#f7f9fb] px-3 py-2 outline-none transition focus:border-[#18b875] focus:bg-white focus:ring-4 focus:ring-emerald-100"
+                    className="mt-1 min-h-24 w-full rounded-md border border-[#8f633e]/60 bg-[#2a1a12]/70 px-3 py-2 text-[#fff8ef] outline-none transition focus:border-[#d7a86e] focus:ring-4 focus:ring-[#d7a86e]/15"
                 />
             </label>
-            {error && <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
-            <button disabled={accounts.length === 0} className="inline-flex h-11 items-center gap-2 rounded-md bg-[#18b875] px-4 font-semibold text-white shadow-lg shadow-emerald-200/70 hover:bg-[#119662] disabled:cursor-not-allowed disabled:opacity-50">
+            {error && <p className="rounded-md border border-red-300/40 bg-red-950/40 px-3 py-2 text-sm text-red-100">{error}</p>}
+            <button disabled={accounts.length === 0} className="inline-flex h-11 items-center gap-2 rounded-md bg-[#d7a86e] px-4 font-bold text-[#2a1a12] shadow-lg shadow-black/20 hover:bg-[#e8bb82] disabled:cursor-not-allowed disabled:opacity-50">
                 <Plus size={18} />
                 Save money record
             </button>

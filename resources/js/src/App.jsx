@@ -63,6 +63,7 @@ export default function App() {
     }
 
     if (!token) return <AuthScreen onAuthed={saveToken} />;
+    if (!user) return <LoadingSession loading={loading} notice={notice} onLogout={() => logout(false)} />;
 
     return (
         <AppLayout
@@ -95,5 +96,22 @@ export default function App() {
             {activeView === 'accounts' && <Accounts accounts={accounts} onCreated={loadAll} />}
             {activeView === 'categories' && <Categories categories={categories} onCreated={loadAll} />}
         </AppLayout>
+    );
+}
+
+function LoadingSession({ loading, notice, onLogout }) {
+    return (
+        <main className="flex min-h-screen items-center justify-center bg-[#2a1a12] px-4 text-[#f8efe3]">
+            <div className="w-full max-w-md rounded-lg border border-[#8f633e]/60 bg-[#3a251a]/85 p-6 text-center shadow-2xl shadow-black/25">
+                <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#f2c38b]">{loading ? 'Loading' : 'Session'}</p>
+                <h1 className="mt-3 text-3xl font-bold">{loading ? 'Opening your tracker...' : 'Could not open your session.'}</h1>
+                <p className="mt-3 text-sm leading-6 text-[#d9c4ad]">{notice || 'Checking your saved login before showing your dashboard.'}</p>
+                {!loading && (
+                    <button type="button" onClick={onLogout} className="mt-5 h-11 rounded-md bg-[#d7a86e] px-5 font-bold text-[#2a1a12] hover:bg-[#e8bb82]">
+                        Back to welcome
+                    </button>
+                )}
+            </div>
+        </main>
     );
 }

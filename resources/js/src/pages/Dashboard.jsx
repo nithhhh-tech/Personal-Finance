@@ -17,14 +17,14 @@ export default function Dashboard({ summary, transactions, categories, accounts,
     return (
         <div className="space-y-6">
             <div className="grid gap-4 xl:grid-cols-[1.25fr_0.75fr]">
-                <section className="overflow-hidden rounded-lg bg-[#14211d] text-white shadow-xl shadow-slate-300/60">
+                <section className="overflow-hidden rounded-lg border border-[#8f633e]/45 bg-[#2a1a12] text-[#f8efe3] shadow-xl shadow-black/25">
                     <div className="grid gap-6 p-6 md:grid-cols-[1fr_260px]">
                         <div>
-                            <div className="mb-6 inline-flex items-center gap-2 rounded-md bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-slate-300">
+                            <div className="mb-6 inline-flex items-center gap-2 rounded-md border border-[#8f633e]/45 bg-[#3a251a] px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-[#f2c38b]">
                                 <CalendarDays size={14} />
                                 Live overview
                             </div>
-                            <p className="text-sm text-slate-400">Money left</p>
+                            <p className="text-sm text-[#d9c4ad]">Money left</p>
                             <p className="mt-2 text-5xl font-bold tracking-normal">{money(summary?.current_balance)}</p>
                             <div className="mt-6 grid gap-3 sm:grid-cols-3">
                                 <DarkStat label="Earned" value={money(summary?.monthly_income)} color="text-emerald-300" />
@@ -41,7 +41,7 @@ export default function Dashboard({ summary, transactions, categories, accounts,
                                             <stop offset="100%" stopColor="#34d399" stopOpacity="0" />
                                         </linearGradient>
                                     </defs>
-                                    <Tooltip formatter={(value) => money(value)} contentStyle={{ borderRadius: 8, border: '0' }} />
+                                    <Tooltip formatter={(value) => money(value)} contentStyle={{ borderRadius: 8, border: '1px solid #8f633e', background: '#3a251a', color: '#f8efe3' }} />
                                     <Area type="monotone" dataKey="income" stroke="#34d399" strokeWidth={3} fill="url(#incomeFill)" />
                                 </AreaChart>
                             </ResponsiveContainer>
@@ -52,7 +52,7 @@ export default function Dashboard({ summary, transactions, categories, accounts,
                     <div className="space-y-3">
                         {transactions.length === 0 && <Empty text="Add your first money record." />}
                         {transactions.slice(0, 5).map((item) => (
-                            <Row key={item.id} title={item.description || item.category?.name || 'Transaction'} meta={`${shortDate(item.transaction_date)} / ${item.account?.name || 'Wallet'}`} value={`${item.type === 'income' ? '+' : '-'}${money(item.base_amount)}`} tone={item.type === 'income' ? 'text-emerald-700' : 'text-rose-700'} />
+                            <Row key={item.id} title={item.description || item.category?.name || 'Transaction'} meta={`${shortDate(item.transaction_date)} / ${item.account?.name || 'Wallet'}`} value={`${item.type === 'income' ? '+' : '-'}${money(item.base_amount)}`} tone={item.type === 'income' ? 'text-[#89e6ba]' : 'text-[#f0a36f]'} />
                         ))}
                     </div>
                 </Panel>
@@ -80,10 +80,10 @@ export default function Dashboard({ summary, transactions, categories, accounts,
                     <ChartBox>
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={monthlyData}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                                <XAxis dataKey="name" tickLine={false} axisLine={false} />
-                                <YAxis tickLine={false} axisLine={false} />
-                                <Tooltip formatter={(value) => money(value)} contentStyle={{ borderRadius: 8, borderColor: '#e2e8f0' }} />
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#5f3e2a" />
+                                <XAxis dataKey="name" tickLine={false} axisLine={false} tick={{ fill: '#d9c4ad' }} />
+                                <YAxis tickLine={false} axisLine={false} tick={{ fill: '#d9c4ad' }} />
+                                <Tooltip formatter={(value) => money(value)} contentStyle={{ borderRadius: 8, borderColor: '#8f633e', background: '#3a251a', color: '#f8efe3' }} />
                                 <Bar dataKey="income" fill="#22c55e" radius={[5, 5, 0, 0]} />
                                 <Bar dataKey="expense" fill="#f43f5e" radius={[5, 5, 0, 0]} />
                             </BarChart>
@@ -98,7 +98,7 @@ export default function Dashboard({ summary, transactions, categories, accounts,
                                     <Pie data={categoryData} dataKey="total" nameKey="name" innerRadius={62} outerRadius={92} paddingAngle={4}>
                                         {categoryData.map((entry) => <Cell key={entry.name} fill={entry.color} />)}
                                     </Pie>
-                                    <Tooltip formatter={(value) => money(value)} contentStyle={{ borderRadius: 8, borderColor: '#e2e8f0' }} />
+                                    <Tooltip formatter={(value) => money(value)} contentStyle={{ borderRadius: 8, borderColor: '#8f633e', background: '#3a251a', color: '#f8efe3' }} />
                                 </PieChart>
                             </ResponsiveContainer>
                         ) : <Empty text="Add spending records to see where money goes." />}
