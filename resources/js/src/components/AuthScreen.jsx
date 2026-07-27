@@ -63,9 +63,13 @@ export default function AuthScreen({ onAuthed }) {
 }
 
 function LandingPage({ setMode }) {
+    function scrollToSection(id) {
+        document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
     return (
         <main className="min-h-screen bg-[#2a1a12] px-4 py-6 text-[#f8efe3]">
-            <nav className="mx-auto flex max-w-6xl items-center justify-between gap-4 rounded-lg border border-[#8f633e]/50 bg-[#3a251a]/70 px-4 py-3 shadow-lg shadow-black/10 backdrop-blur">
+            <nav className="sticky top-4 z-20 mx-auto flex max-w-6xl items-center justify-between gap-4 rounded-lg border border-[#8f633e]/50 bg-[#3a251a]/85 px-4 py-3 shadow-lg shadow-black/10 backdrop-blur">
                 <div className="inline-flex items-center gap-3">
                     <div className="flex size-10 items-center justify-center rounded-md bg-[#d7a86e] text-[#2a1a12]">
                         <WalletCards size={22} />
@@ -74,6 +78,11 @@ function LandingPage({ setMode }) {
                         <p className="font-bold leading-5 text-[#fff8ef]">My Money Tracker</p>
                         <p className="text-xs text-[#d9c4ad]">Daily Spend Tracker</p>
                     </div>
+                </div>
+                <div className="hidden items-center gap-1 rounded-md border border-[#8f633e]/40 bg-[#2a1a12]/45 p-1 lg:flex">
+                    <button type="button" onClick={() => scrollToSection('track')} className="h-9 rounded px-3 text-sm font-semibold text-[#d9c4ad] hover:bg-[#4a3022] hover:text-[#fff8ef]">Track</button>
+                    <button type="button" onClick={() => scrollToSection('flow')} className="h-9 rounded px-3 text-sm font-semibold text-[#d9c4ad] hover:bg-[#4a3022] hover:text-[#fff8ef]">How it works</button>
+                    <button type="button" onClick={() => scrollToSection('privacy')} className="h-9 rounded px-3 text-sm font-semibold text-[#d9c4ad] hover:bg-[#4a3022] hover:text-[#fff8ef]">Private</button>
                 </div>
                 <div className="flex items-center gap-2">
                     <button type="button" onClick={() => setMode('login')} className="hidden h-10 rounded-md border border-[#8f633e] px-4 text-sm font-semibold text-[#fff8ef] hover:bg-[#4a3022] sm:block">Login</button>
@@ -113,6 +122,50 @@ function LandingPage({ setMode }) {
                         </div>
                     </div>
                     <button type="button" onClick={() => setMode('register')} className="mt-6 h-11 w-full rounded-md bg-[#d7a86e] font-bold text-[#2a1a12] hover:bg-[#e8bb82]">Get Started</button>
+                </div>
+            </section>
+
+            <section id="track" className="mx-auto grid scroll-mt-28 max-w-6xl gap-4 border-t border-[#8f633e]/30 py-12 md:grid-cols-3">
+                <div>
+                    <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#f2c38b]">Track</p>
+                    <h3 className="mt-3 text-3xl font-bold text-[#fff8ef]">Record the money story of each day.</h3>
+                </div>
+                <div className="rounded-lg border border-[#8f633e]/50 bg-[#3a251a]/70 p-5">
+                    <p className="font-semibold text-[#fff8ef]">Income</p>
+                    <p className="mt-2 text-sm leading-6 text-[#d9c4ad]">Add salary, freelance money, allowance, gifts, or side income.</p>
+                </div>
+                <div className="rounded-lg border border-[#8f633e]/50 bg-[#3a251a]/70 p-5">
+                    <p className="font-semibold text-[#fff8ef]">Spending</p>
+                    <p className="mt-2 text-sm leading-6 text-[#d9c4ad]">Log food, transport, bills, shopping, subscriptions, and small daily expenses.</p>
+                </div>
+            </section>
+
+            <section id="flow" className="mx-auto grid scroll-mt-28 max-w-6xl gap-4 py-8 md:grid-cols-3">
+                <div className="rounded-lg border border-[#8f633e]/50 bg-[#3a251a]/70 p-5">
+                    <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#f2c38b]">01</p>
+                    <h3 className="mt-3 text-xl font-bold text-[#fff8ef]">Create wallets</h3>
+                    <p className="mt-2 text-sm leading-6 text-[#d9c4ad]">Cash, ABA, Wing, savings, or any place where your money lives.</p>
+                </div>
+                <div className="rounded-lg border border-[#8f633e]/50 bg-[#3a251a]/70 p-5">
+                    <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#f2c38b]">02</p>
+                    <h3 className="mt-3 text-xl font-bold text-[#fff8ef]">Add transactions</h3>
+                    <p className="mt-2 text-sm leading-6 text-[#d9c4ad]">Choose earned or spent, set the amount, category, wallet, and date.</p>
+                </div>
+                <div className="rounded-lg border border-[#8f633e]/50 bg-[#3a251a]/70 p-5">
+                    <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#f2c38b]">03</p>
+                    <h3 className="mt-3 text-xl font-bold text-[#fff8ef]">See what is left</h3>
+                    <p className="mt-2 text-sm leading-6 text-[#d9c4ad]">Your dashboard keeps the totals clear without bank connection or fake demo data.</p>
+                </div>
+            </section>
+
+            <section id="privacy" className="mx-auto mb-8 scroll-mt-28 rounded-lg border border-[#8f633e]/50 bg-[#3a251a]/70 p-6 max-w-6xl">
+                <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+                    <div className="max-w-2xl">
+                        <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#f2c38b]">Private</p>
+                        <h3 className="mt-3 text-3xl font-bold text-[#fff8ef]">Only your own records after login.</h3>
+                        <p className="mt-2 text-sm leading-6 text-[#d9c4ad]">The landing page stays clean. Your real wallets, income, spending, and balance appear only after you sign in.</p>
+                    </div>
+                    <button type="button" onClick={() => setMode('register')} className="h-11 rounded-md bg-[#d7a86e] px-5 font-bold text-[#2a1a12] hover:bg-[#e8bb82]">Start Tracking</button>
                 </div>
             </section>
         </main>
