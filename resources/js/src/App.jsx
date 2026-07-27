@@ -18,6 +18,23 @@ export default function App() {
     const [activeView, setActiveView] = useState('dashboard');
     const [loading, setLoading] = useState(false);
     const [notice, setNotice] = useState('');
+    const [darkMode, setDarkMode] = useState(() => {
+        return localStorage.getItem('apple_theme') === 'dark';
+    });
+
+    useEffect(() => {
+        if (darkMode) {
+            document.documentElement.classList.add('dark');
+            localStorage.setItem('apple_theme', 'dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+            localStorage.setItem('apple_theme', 'light');
+        }
+    }, [darkMode]);
+
+    function toggleTheme() {
+        setDarkMode((prev) => !prev);
+    }
 
     useEffect(() => {
         api.defaults.headers.common.Authorization = token ? `Bearer ${token}` : '';
@@ -62,17 +79,19 @@ export default function App() {
         setUser(null);
     }
 
-    if (!token) return <AuthScreen onAuthed={saveToken} />;
+    if (!token) return <AuthScreen onAuthed={saveToken} darkMode={darkMode} toggleTheme={toggleTheme} />;
 
     return (
         <AppLayout
             activeView={activeView}
+            darkMode={darkMode}
             loading={loading}
             notice={notice}
-            onRefresh={loadAll}
             onLogout={() => logout()}
+            onRefresh={loadAll}
             setActiveView={setActiveView}
             summary={summary}
+            toggleTheme={toggleTheme}
             user={user}
         >
             {activeView === 'dashboard' && (

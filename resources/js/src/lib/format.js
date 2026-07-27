@@ -36,3 +36,18 @@ export function readError(error) {
     if (data?.message) return data.message;
     return 'Something went wrong. Please try again.';
 }
+
+export function coffeeColor(hexColor) {
+    const map = {
+        '#16a34a': '#5F8575', // Salary -> Sage Matcha
+        '#0d9488': '#A59285', // Allowance -> Latte Milk Chocolate
+        '#dc2626': '#C15C3D', // Food -> Cinnamon Red
+        '#ea580c': '#BC6C25', // Transport -> Toasted Cinnamon
+        '#7c3aed': '#4E3629', // Bills -> Espresso Brown
+        '#2563eb': '#E6A15C', // Shopping -> Caramel Gold
+        '#0891b2': '#D4A373', // Savings -> Honey Crema
+        '#0071e3': '#E6A15C', // Brand blue -> Caramel Gold
+    };
+    return map[hexColor?.toLowerCase()] || hexColor;
+}
+

@@ -1,156 +1,154 @@
-export function Panel({ title, children }) {
+// ── Apple Style Primitive UI components ──────────────────────────────────────────
+
+export function Panel({ title, children, className = '' }) {
     return (
-        <section className="rounded-lg border border-white bg-white/94 p-5 shadow-lg shadow-slate-300/45 backdrop-blur">
-            <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-base font-semibold">{title}</h2>
-            </div>
+        <section className={`card animate-fade-in-up ${className}`}>
+            {title && <h2 className="card-title">{title}</h2>}
             {children}
         </section>
     );
 }
 
 export function ChartBox({ children }) {
-    return <div className="h-72 min-h-72 w-full">{children}</div>;
+    return <div className="chart-box">{children}</div>;
 }
 
 export function Empty({ text }) {
-    return (
-        <div className="rounded-md border border-dashed border-slate-300 bg-[#f7f9fb] px-4 py-6 text-center text-sm text-slate-500">
-            {text}
-        </div>
-    );
+    return <div className="empty-state">{text}</div>;
 }
 
 export function NavButton({ icon: Icon, label, active, onClick }) {
     return (
-        <button
-            onClick={onClick}
-            className={`flex h-11 w-full items-center gap-3 rounded-md px-3 text-left text-sm font-semibold transition ${active ? 'bg-white text-[#111827]' : 'text-slate-300 hover:bg-white/10 hover:text-white'}`}
-        >
-            <Icon size={18} />
-            {label}
+        <button onClick={onClick} className={`nav-btn${active ? ' active' : ''}`}>
+            <Icon size={18} strokeWidth={active ? 2.2 : 1.8} />
+            <span style={{ fontFamily: 'var(--font-sans)' }}>{label}</span>
         </button>
     );
 }
 
 export function MiniNav({ icon: Icon, active, onClick }) {
     return (
-        <button
-            onClick={onClick}
-            className={`flex h-11 items-center justify-center rounded-md ${active ? 'bg-[#14211d] text-white' : 'bg-slate-100 text-slate-600'}`}
-        >
-            <Icon size={18} />
+        <button onClick={onClick} className={`mobile-nav-btn${active ? ' active' : ''}`}>
+            <Icon size={20} strokeWidth={active ? 2.2 : 1.8} />
         </button>
     );
 }
 
 export function WelcomePoint({ title, text }) {
     return (
-        <div className="rounded-md border border-slate-200 bg-[#f7f9fb] p-4">
-            <p className="font-semibold text-[#14211d]">{title}</p>
-            <p className="mt-1 text-sm leading-6 text-slate-600">{text}</p>
+        <div style={{ padding: '14px 16px', borderRadius: 12, border: '1px solid var(--apple-border)', background: '#FFFFFF' }}>
+            <p style={{ fontWeight: 700, fontSize: 14, color: 'var(--apple-dark)', marginBottom: 2 }}>{title}</p>
+            <p style={{ fontSize: 13, lineHeight: 1.5, color: 'var(--apple-sub)' }}>{text}</p>
         </div>
     );
 }
 
 export function PreviewStat({ label, value, tone }) {
-    const colors = {
-        emerald: 'text-emerald-700 bg-emerald-50',
-        rose: 'text-rose-700 bg-rose-50',
-        blue: 'text-blue-700 bg-blue-50',
+    const styles = {
+        emerald: { background: 'rgba(95, 133, 117, 0.1)', color: '#5F8575' },
+        rose:    { background: 'rgba(193, 92, 61, 0.1)', color: '#C15C3D' },
+        blue:    { background: 'rgba(230, 161, 92, 0.1)',  color: '#E6A15C' },
     };
 
     return (
-        <div className={`rounded-md px-3 py-3 ${colors[tone]}`}>
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] opacity-70">{label}</p>
-            <p className="mt-1 text-lg font-semibold">{value}</p>
+        <div style={{ ...styles[tone], borderRadius: 12, padding: '12px 14px' }}>
+            <p style={{ fontSize: 10.5, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', opacity: 0.8, marginBottom: 3 }}>{label}</p>
+            <p style={{ fontFamily: 'var(--font-mono)', fontSize: 17, fontWeight: 600, letterSpacing: '-0.02em' }}>{value}</p>
         </div>
     );
 }
 
 export function PreviewRow({ title, meta, value, tone }) {
+    const isIncome = tone?.includes('emerald');
     return (
-        <div className="flex items-center justify-between rounded-md border border-slate-200 px-3 py-3">
+        <div className="tx-row">
             <div>
-                <p className="font-medium">{title}</p>
-                <p className="text-sm text-slate-500">{meta}</p>
+                <p className="tx-row-title">{title}</p>
+                <p className="tx-row-meta">{meta}</p>
             </div>
-            <p className={`font-semibold ${tone}`}>{value}</p>
+            <p className={`tx-row-value ${isIncome ? 'income' : 'expense'}`}>{value}</p>
         </div>
     );
 }
 
 export function DarkStat({ label, value, color }) {
+    const colorMap = {
+        'text-emerald-300': '#7FA392',
+        'text-rose-300':    '#DE7D63',
+        'text-sky-300':     '#EBB67B',
+    };
     return (
-        <div className="rounded-md bg-white/10 p-3">
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">{label}</p>
-            <p className={`mt-1 text-lg font-semibold ${color}`}>{value}</p>
+        <div className="dark-stat">
+            <p className="dark-stat-label">{label}</p>
+            <p className="dark-stat-value" style={{ color: colorMap[color] || '#FFFFFF' }}>{value}</p>
         </div>
     );
 }
 
 export function Metric({ title, value, icon: Icon, tone }) {
-    const colors = {
-        emerald: 'bg-emerald-50 text-emerald-700',
-        blue: 'bg-blue-50 text-blue-700',
-        rose: 'bg-rose-50 text-rose-700',
-        amber: 'bg-amber-50 text-amber-700',
-    };
+    const toneClass = {
+        emerald: 'tone-mint',
+        rose:    'tone-coral',
+        blue:    'tone-blue',
+        amber:   'tone-amber',
+    }[tone] || 'tone-blue';
 
     return (
-        <div className="rounded-lg border border-white bg-white/94 p-5 shadow-lg shadow-slate-300/45 backdrop-blur">
-            <div className="flex items-center justify-between">
-                <p className="text-sm font-medium text-slate-500">{title}</p>
-                <div className={`flex size-10 items-center justify-center rounded-md ${colors[tone]}`}>
-                    <Icon size={20} />
-                </div>
+        <div className={`metric-card ${toneClass} animate-fade-in-up`}>
+            <div className={`metric-icon ${toneClass}`}>
+                <Icon size={19} strokeWidth={2.2} />
             </div>
-            <p className="mt-4 text-2xl font-semibold tracking-normal">{value}</p>
+            <p className="metric-label">{title}</p>
+            <p className="metric-value">{value}</p>
         </div>
     );
 }
 
-export function Row({ title, meta, value, tone = 'text-slate-900' }) {
+export function Row({ title, meta, value, tone = '' }) {
+    const isIncome = tone.includes('emerald');
+    const isExpense = tone.includes('rose');
+    const valueClass = `tx-row-value${isIncome ? ' income' : isExpense ? ' expense' : ''}`;
+
     return (
-        <div className="flex items-center justify-between gap-4 rounded-md border border-slate-200 bg-white px-4 py-3 transition hover:border-slate-300 hover:bg-[#f7f9fb]">
-            <div className="min-w-0">
-                <p className="truncate font-semibold">{title}</p>
-                <p className="truncate text-sm text-slate-500">{meta}</p>
+        <div className="tx-row">
+            <div style={{ minWidth: 0 }}>
+                <p className="tx-row-title" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{title}</p>
+                <p className="tx-row-meta"  style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{meta}</p>
             </div>
-            <p className={`shrink-0 font-semibold ${tone}`}>{value}</p>
+            <p className={valueClass}>{value}</p>
         </div>
     );
 }
 
 export function Input({ label, value, onChange, type = 'text' }) {
     return (
-        <label className="block text-sm font-semibold text-slate-700">
-            {label}
+        <div>
+            <label className="form-label">{label}</label>
             <input
                 type={type}
                 value={value}
                 onChange={(event) => onChange(event.target.value)}
-                className="mt-1 h-11 w-full rounded-md border border-slate-200 bg-[#f7f9fb] px-3 outline-none transition focus:border-[#18b875] focus:bg-white focus:ring-4 focus:ring-emerald-100"
+                className="form-input"
             />
-        </label>
+        </div>
     );
 }
 
 export function Select({ label, value, onChange, options }) {
     return (
-        <label className="block text-sm font-semibold text-slate-700">
-            {label}
-            <select
-                value={value}
-                onChange={(event) => onChange(event.target.value)}
-                className="mt-1 h-11 w-full rounded-md border border-slate-200 bg-[#f7f9fb] px-3 outline-none transition focus:border-[#18b875] focus:bg-white focus:ring-4 focus:ring-emerald-100"
-            >
-                {options.map(([optionValue, optionLabel]) => (
-                    <option key={optionValue} value={optionValue}>
-                        {optionLabel}
-                    </option>
-                ))}
-            </select>
-        </label>
+        <div>
+            <label className="form-label">{label}</label>
+            <div className="form-select-wrapper">
+                <select
+                    value={value}
+                    onChange={(event) => onChange(event.target.value)}
+                    className="form-select"
+                >
+                    {options.map(([optionValue, optionLabel]) => (
+                        <option key={optionValue} value={optionValue}>{optionLabel}</option>
+                    ))}
+                </select>
+            </div>
+        </div>
     );
 }

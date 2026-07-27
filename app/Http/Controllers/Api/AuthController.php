@@ -33,8 +33,9 @@ class AuthController extends Controller
 
     private function createDefaultCategories(User $user): void
     {
-        foreach ([['Salary','income','#16a34a'], ['Allowance','income','#0d9488'], ['Food','expense','#dc2626'], ['Transport','expense','#ea580c'], ['Bills','expense','#7c3aed'], ['Shopping','expense','#2563eb'], ['Savings','expense','#0891b2']] as [$name, $type, $color]) {
+        foreach ([['Salary','income','#5F8575'], ['Allowance','income','#D4A373'], ['Food','expense','#C15C3D'], ['Transport','expense','#BC6C25'], ['Bills','expense','#4E3629'], ['Shopping','expense','#E6A15C'], ['Savings','expense','#A59285']] as [$name, $type, $color]) {
             $user->categories()->create(['name' => $name, 'type' => $type, 'color' => $color]);
         }
     }
 }
+
