@@ -72,6 +72,23 @@ input[type='number']::-webkit-outer-spin-button {
     animation: auth-drawer-in 260ms ease-out both;
 }
 
+.quick-drawer-panel {
+    animation: quick-drawer-in 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+    will-change: transform, opacity;
+}
+
+.quick-drawer-backdrop {
+    animation: quick-drawer-backdrop-in 260ms ease-out both;
+}
+
+.quick-drawer-panel-out {
+    animation: quick-drawer-out 320ms cubic-bezier(0.7, 0, 0.84, 0) both;
+}
+
+.quick-drawer-backdrop-out {
+    animation: quick-drawer-backdrop-out 320ms ease-in both;
+}
+
 @keyframes auth-drawer-in {
     from {
         opacity: 0;
@@ -81,5 +98,49 @@ input[type='number']::-webkit-outer-spin-button {
     to {
         opacity: 1;
         transform: translateX(0) scale(1);
+    }
+}
+
+@keyframes quick-drawer-in {
+    from {
+        opacity: 0.96;
+        transform: translateX(100%);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes quick-drawer-backdrop-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes quick-drawer-out {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    to {
+        opacity: 0.96;
+        transform: translateX(100%);
+    }
+}
+
+@keyframes quick-drawer-backdrop-out {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
     }
 }

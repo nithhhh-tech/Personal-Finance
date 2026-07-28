@@ -28,7 +28,7 @@ export default function Accounts({ accounts, onCreated }) {
                 id: account.id,
                 title: account.name,
                 meta: `${account.type} / ${account.currency}`,
-                value: money(account.current_balance),
+                value: money(account.current_balance, account.currency),
             }))}
         />
     );

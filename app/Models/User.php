@@ -3,12 +3,13 @@
 namespace App\Models;
 
 use Database\Factories\UserFactory;
+use Illuminate\Contracts\Auth\MustVerifyEmail as MustVerifyEmailContract;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmailContract
 {
     /** @use HasFactory<UserFactory> */
     use HasApiTokens, HasFactory, Notifiable;
@@ -22,6 +23,7 @@ class User extends Authenticatable
     }
 
     public function accounts() { return $this->hasMany(Account::class); }
+    public function budgets() { return $this->hasMany(Budget::class); }
     public function categories() { return $this->hasMany(Category::class); }
     public function transactions() { return $this->hasMany(Transaction::class); }
 }

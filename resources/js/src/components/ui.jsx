@@ -1,8 +1,8 @@
 export function Panel({ title, children }) {
     return (
-        <section className="rounded-lg border border-[#8f633e]/45 bg-[#3a251a]/88 p-5 text-[#f8efe3] shadow-lg shadow-black/20 backdrop-blur">
-            <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-base font-semibold">{title}</h2>
+        <section className="rounded-lg border border-[#8f633e]/45 bg-[#3a251a]/88 p-4 text-[#f8efe3] shadow-lg shadow-black/20 backdrop-blur sm:p-5">
+            <div className="mb-3 flex items-center justify-between sm:mb-4">
+                <h2 className="text-sm font-semibold sm:text-base">{title}</h2>
             </div>
             {children}
         </section>
@@ -10,7 +10,7 @@ export function Panel({ title, children }) {
 }
 
 export function ChartBox({ children }) {
-    return <div className="h-72 min-h-72 w-full">{children}</div>;
+    return <div className="h-64 min-h-64 w-full sm:h-72 sm:min-h-72">{children}</div>;
 }
 
 export function Empty({ text }) {
@@ -33,13 +33,14 @@ export function NavButton({ icon: Icon, label, active, onClick }) {
     );
 }
 
-export function MiniNav({ icon: Icon, active, onClick }) {
+export function MiniNav({ icon: Icon, label, active, onClick }) {
     return (
         <button
             onClick={onClick}
-            className={`flex h-11 items-center justify-center rounded-md ${active ? 'bg-[#d7a86e] text-[#2a1a12]' : 'bg-[#2a1a12]/65 text-[#d9c4ad]'}`}
+            className={`flex h-14 min-w-0 flex-col items-center justify-center gap-1 rounded-md px-1 text-[10px] font-semibold leading-none ${active ? 'bg-[#d7a86e] text-[#2a1a12]' : 'bg-[#2a1a12]/65 text-[#d9c4ad]'}`}
         >
-            <Icon size={18} />
+            <Icon size={17} />
+            <span className="max-w-full truncate">{label}</span>
         </button>
     );
 }
@@ -71,26 +72,29 @@ export function Metric({ title, value, icon: Icon, tone }) {
     };
 
     return (
-        <div className="rounded-lg border border-[#8f633e]/45 bg-[#3a251a]/88 p-5 text-[#f8efe3] shadow-lg shadow-black/20 backdrop-blur">
+        <div className="rounded-lg border border-[#8f633e]/45 bg-[#3a251a]/88 p-4 text-[#f8efe3] shadow-lg shadow-black/20 backdrop-blur sm:p-5">
             <div className="flex items-center justify-between">
                 <p className="text-sm font-medium text-[#d9c4ad]">{title}</p>
                 <div className={`flex size-10 items-center justify-center rounded-md ${colors[tone]}`}>
                     <Icon size={20} />
                 </div>
             </div>
-            <p className="mt-4 text-2xl font-semibold tracking-normal">{value}</p>
+            <p className="mt-4 text-xl font-semibold tracking-normal sm:text-2xl">{value}</p>
         </div>
     );
 }
 
-export function Row({ title, meta, value, tone = 'text-[#f2c38b]' }) {
+export function Row({ title, meta, value, tone = 'text-[#f2c38b]', action = null }) {
     return (
-        <div className="flex items-center justify-between gap-4 rounded-md border border-[#8f633e]/45 bg-[#2a1a12]/45 px-4 py-3 text-[#f8efe3] transition hover:border-[#d7a86e]/60 hover:bg-[#4a3022]/65">
-            <div className="min-w-0">
+        <div className="flex flex-col gap-3 rounded-md border border-[#8f633e]/45 bg-[#2a1a12]/45 px-4 py-3 text-[#f8efe3] transition hover:border-[#d7a86e]/60 hover:bg-[#4a3022]/65 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+            <div className="min-w-0 flex-1">
                 <p className="truncate font-semibold">{title}</p>
                 <p className="truncate text-sm text-[#d9c4ad]">{meta}</p>
             </div>
-            <p className={`shrink-0 font-semibold ${tone}`}>{value}</p>
+            <div className="flex w-full shrink-0 items-center justify-between gap-2 sm:w-auto sm:justify-end">
+                <p className={`font-semibold ${tone}`}>{value}</p>
+                {action}
+            </div>
         </div>
     );
 }

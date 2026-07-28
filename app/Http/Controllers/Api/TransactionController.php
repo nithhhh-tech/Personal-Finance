@@ -18,7 +18,10 @@ class TransactionController extends Controller
             ->when($request->category_id, fn ($q, $id) => $q->where('category_id', $id))
             ->when($request->from, fn ($q, $date) => $q->whereDate('transaction_date', '>=', $date))
             ->when($request->to, fn ($q, $date) => $q->whereDate('transaction_date', '<=', $date))
-            ->when($request->search, fn ($q, $search) => $q->where('description', 'like', "%{$search}%"))
+            ->when($request->search, fn ($q, $search) => $q->where(function ($query) use ($search) {
+                $query->where('description', 'like', "%{$search}%")
+                    ->orWhereHas('category', fn ($categoryQuery) => $categoryQuery->where('name', 'like', "%{$search}%"));
+            }))
             ->orderByDesc('transaction_date')->latest()->paginate(20);
     }
 
@@ -26,7 +29,7 @@ class TransactionController extends Controller
     {
         $data = $this->validateData($request);
         $data['user_id'] = $request->user()->id;
-        $data['base_amount'] = $data['amount'] * ($data['exchange_rate'] ?? 1);
+        $data = $this->normalizeCurrencyData($data, $request->user()->base_currency);
         $transaction = Transaction::create($data);
         $this->recalculateAccount($transaction->account);
         return $transaction->load(['account','category']);
@@ -42,11 +45,11 @@ class TransactionController extends Controller
         $transaction = $request->user()->transactions()->findOrFail($id);
         $oldAccount = $transaction->account;
         $data = $this->validateData($request, true);
-        if (isset($data['amount']) || isset($data['exchange_rate'])) {
-            $amount = $data['amount'] ?? $transaction->amount;
-            $rate = $data['exchange_rate'] ?? $transaction->exchange_rate;
-            $data['base_amount'] = $amount * $rate;
-        }
+        $data = $this->normalizeCurrencyData([
+            'amount' => $data['amount'] ?? $transaction->amount,
+            'currency' => $data['currency'] ?? $transaction->currency,
+            'exchange_rate' => $data['exchange_rate'] ?? $transaction->exchange_rate,
+        ] + $data, $request->user()->base_currency);
         $transaction->update($data);
         $this->recalculateAccount($oldAccount);
         $this->recalculateAccount($transaction->fresh()->account);
@@ -65,9 +68,11 @@ class TransactionController extends Controller
     private function validateData(Request $request, bool $partial = false): array
     {
         $rule = $partial ? 'sometimes' : 'required';
+        $userId = $request->user()->id;
+
         return $request->validate([
-            'account_id' => [$rule, 'exists:accounts,id'],
-            'category_id' => [$rule, 'exists:categories,id'],
+            'account_id' => [$rule, Rule::exists('accounts', 'id')->where('user_id', $userId)],
+            'category_id' => [$rule, Rule::exists('categories', 'id')->where('user_id', $userId)],
             'type' => [$rule, 'in:income,expense'],
             'amount' => [$rule, 'numeric', 'gt:0'],
             'currency' => ['sometimes', 'in:USD,KHR'],
@@ -78,6 +83,24 @@ class TransactionController extends Controller
             'tags' => ['nullable', 'array'],
             'receipt_url' => ['nullable', 'url'],
         ]);
+    }
+
+    private function normalizeCurrencyData(array $data, string $baseCurrency): array
+    {
+        $currency = $data['currency'] ?? $baseCurrency;
+        $amount = (float) $data['amount'];
+        $rate = (float) ($data['exchange_rate'] ?? 1);
+
+        if ($currency === $baseCurrency) {
+            $data['exchange_rate'] = 1;
+            $data['base_amount'] = $amount;
+            return $data;
+        }
+
+        $data['exchange_rate'] = $rate;
+        $data['base_amount'] = $baseCurrency === 'USD' ? $amount / $rate : $amount * $rate;
+
+        return $data;
     }
 
     private function recalculateAccount(Account $account): void
