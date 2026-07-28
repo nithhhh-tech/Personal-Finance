@@ -180,7 +180,7 @@ Install the following before starting:
 ### 1. Clone the Repository
 
 ```bash
-git clone [<your-repository-url>](https://github.com/nithhhh-tech/Personal-Finance.git)
+git clone https://github.com/nithhhh-tech/Personal-Finance.git
 cd Personal-Finance-main
 ```
 
