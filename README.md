@@ -491,5 +491,6 @@ Planned improvements include:
 ## Author
 
 **Van Phanith**
+**Lun Lytayhok**
 
 Built as a personal project for practical daily money tracking and continued full-stack development practice.
