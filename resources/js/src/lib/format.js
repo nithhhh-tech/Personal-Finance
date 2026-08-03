@@ -1,7 +1,12 @@
 export const today = new Date().toISOString().slice(0, 10);
+export const currentMonth = today.slice(0, 7);
 
-export function money(value) {
-    return `$${Number(value || 0).toFixed(2)}`;
+export function money(value, currency = 'USD') {
+    const amount = Number(value || 0);
+
+    if (currency === 'KHR') return `${new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(amount)} KHR`;
+
+    return `$${amount.toFixed(2)}`;
 }
 
 export function buildMonthlyData(transactions) {
@@ -21,6 +26,8 @@ export function viewTitle(view) {
     return {
         dashboard: 'Dashboard',
         transactions: 'Money Records',
+        budgets: 'Monthly Budgets',
+        reports: 'Reports',
         accounts: 'Wallets',
         categories: 'Categories',
     }[view] || 'Dashboard';
