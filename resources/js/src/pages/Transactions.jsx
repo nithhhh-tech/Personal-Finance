@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Search } from 'lucide-react';
 import TransactionForm from '../components/TransactionForm.jsx';
-import { Empty, Panel, TxRow } from '../components/ui.jsx';
+import { Empty, Panel, TxRow, PageHeader } from '../components/ui.jsx';
 import { money, shortDate } from '../lib/format.js';
 import { Input } from '../components/ui/input.jsx';
 
@@ -14,7 +14,12 @@ export default function Transactions({ transactions, accounts, categories, onCre
     );
 
     return (
-        <div className="grid gap-6 lg:grid-cols-[400px_1fr]">
+        <div className="flex flex-col gap-6">
+            <PageHeader
+                title="Transactions"
+                description="Add a record or search your money history."
+            />
+            <div className="grid gap-6 lg:grid-cols-[400px_1fr]">
             <Panel title="Add money record">
                 <TransactionForm accounts={accounts} categories={categories} onCreated={onCreated} />
             </Panel>
@@ -43,6 +48,7 @@ export default function Transactions({ transactions, accounts, categories, onCre
                     ))}
                 </div>
             </Panel>
+            </div>
         </div>
     );
 }

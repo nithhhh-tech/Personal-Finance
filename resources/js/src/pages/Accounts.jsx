@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import CrudPanel from '../components/CrudPanel.jsx';
+import { PageHeader } from '../components/ui.jsx';
 import { Input } from '../components/ui/input.jsx';
 import { Label } from '../components/ui/label.jsx';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select.jsx';
@@ -10,7 +11,12 @@ export default function Accounts({ accounts, onCreated }) {
     const [form, setForm] = useState({ name: '', type: 'cash', currency: 'USD', starting_balance: 0 });
 
     return (
-        <CrudPanel
+        <div className="flex flex-col gap-6">
+            <PageHeader
+                title="Wallets"
+                description="Manage cash, ABA, Wing, savings, and other wallets."
+            />
+            <CrudPanel
             title="New wallet"
             onSubmit={async () => {
                 await api.post('/accounts', form);
@@ -64,5 +70,6 @@ export default function Accounts({ accounts, onCreated }) {
                 value: money(account.current_balance, account.currency),
             }))}
         />
+        </div>
     );
 }

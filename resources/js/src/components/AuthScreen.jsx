@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ShieldCheck, Sun, Moon } from 'lucide-react';
+import { ShieldCheck, Sun, Moon, Coffee } from 'lucide-react';
 import { api } from '../lib/api.js';
 import { readError } from '../lib/format.js';
 import { Button } from './ui/button.jsx';
@@ -34,31 +34,42 @@ export default function AuthScreen({ onAuthed, darkMode, toggleTheme }) {
     }
 
     return (
-        <main className="relative flex min-h-screen items-center justify-center bg-background px-4 py-12">
+        <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background px-4 py-12">
+            {/* Soft Apple-style ambient glow */}
+            <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+                <div className="absolute -top-32 left-1/2 h-96 w-[42rem] -translate-x-1/2 rounded-full bg-primary/10 blur-3xl" />
+                <div className="absolute -bottom-40 right-0 h-80 w-80 rounded-full bg-chart-5/10 blur-3xl" />
+            </div>
+
             <div className="absolute top-6 right-6 z-20">
-                <Button variant="outline" size="sm" onClick={toggleTheme} className="gap-2">
-                    {darkMode ? <Sun className="size-4 text-amber-400" /> : <Moon className="size-4 text-slate-600" />}
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={toggleTheme}
+                    className="gap-2 rounded-full text-muted-foreground"
+                >
+                    {darkMode ? <Sun className="size-4 text-amber-400" /> : <Moon className="size-4 text-amber-700" />}
                     <span>{darkMode ? 'Light' : 'Dark'}</span>
                 </Button>
             </div>
 
-            <div className="w-full max-w-md">
+            <div className="relative w-full max-w-md">
                 <div className="mb-8 text-center">
-                    <div className="mx-auto mb-3 flex size-12 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm font-bold text-lg">
-                        P
+                    <div className="mx-auto mb-4 flex size-14 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-lg shadow-primary/25">
+                        <Coffee className="size-7" />
                     </div>
-                    <h1 className="text-2xl font-bold tracking-tight">Personal Finance Tracker</h1>
-                    <p className="mt-1 text-sm text-muted-foreground">Know exactly where your money goes.</p>
+                    <h1 className="text-3xl font-semibold tracking-tight">Personal Finance Tracker</h1>
+                    <p className="mt-1.5 text-sm text-muted-foreground">Brew better money habits.</p>
                 </div>
 
-                <Card className="border shadow-lg">
+                <Card className="rounded-sm border-border/60 shadow-xl shadow-black/5">
                     <CardHeader className="space-y-1">
-                        <CardTitle className="text-xl font-bold">Welcome</CardTitle>
+                        <CardTitle className="text-xl font-semibold tracking-tight">Welcome</CardTitle>
                         <CardDescription>Sign in or create an account to continue</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <Tabs value={mode} onValueChange={setMode} className="w-full">
-                            <TabsList className="grid w-full grid-cols-2 mb-6">
+                            <TabsList className="grid w-full grid-cols-2 mb-6 rounded-xl">
                                 <TabsTrigger value="login" id="tab-login">Log in</TabsTrigger>
                                 <TabsTrigger value="register" id="tab-register">Register</TabsTrigger>
                             </TabsList>
@@ -125,8 +136,17 @@ export default function AuthScreen({ onAuthed, darkMode, toggleTheme }) {
                                     </Alert>
                                 )}
 
-                                <Button type="submit" className="w-full mt-2" disabled={submitting} id="auth-submit-btn">
-                                    {submitting ? 'Please wait...' : mode === 'login' ? 'Log in' : 'Create account'}
+                                <Button
+                                    type="submit"
+                                    className="w-full mt-2 rounded-full"
+                                    disabled={submitting}
+                                    id="auth-submit-btn"
+                                >
+                                    {submitting
+                                        ? 'Please wait...'
+                                        : mode === 'login'
+                                          ? 'Log in'
+                                          : 'Create account'}
                                 </Button>
                             </form>
                         </Tabs>

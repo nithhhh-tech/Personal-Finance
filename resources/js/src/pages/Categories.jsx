@@ -1,19 +1,25 @@
 import { useState } from 'react';
 import CrudPanel from '../components/CrudPanel.jsx';
+import { PageHeader } from '../components/ui.jsx';
 import { Input } from '../components/ui/input.jsx';
 import { Label } from '../components/ui/label.jsx';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select.jsx';
 import { api } from '../lib/api.js';
 
 export default function Categories({ categories, onCreated }) {
-    const [form, setForm] = useState({ name: '', type: 'expense', color: '#3b82f6' });
+    const [form, setForm] = useState({ name: '', type: 'expense', color: '#8a5a2b' });
 
     return (
-        <CrudPanel
+        <div className="flex flex-col gap-6">
+            <PageHeader
+                title="Categories"
+                description="Group your income and spending into clear categories."
+            />
+            <CrudPanel
             title="New category"
             onSubmit={async () => {
                 await api.post('/categories', form);
-                setForm({ name: '', type: 'expense', color: '#3b82f6' });
+                setForm({ name: '', type: 'expense', color: '#8a5a2b' });
                 onCreated();
             }}
             fields={(
@@ -62,5 +68,6 @@ export default function Categories({ categories, onCreated }) {
                 ),
             }))}
         />
+        </div>
     );
 }

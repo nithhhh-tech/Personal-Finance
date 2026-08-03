@@ -46,14 +46,14 @@ export function readError(error) {
 
 export function coffeeColor(hexColor) {
     const map = {
-        '#16a34a': '#5F8575', // Salary -> Sage Matcha
-        '#0d9488': '#A59285', // Allowance -> Latte Milk Chocolate
-        '#dc2626': '#C15C3D', // Food -> Cinnamon Red
-        '#ea580c': '#BC6C25', // Transport -> Toasted Cinnamon
-        '#7c3aed': '#4E3629', // Bills -> Espresso Brown
-        '#2563eb': '#E6A15C', // Shopping -> Caramel Gold
-        '#0891b2': '#D4A373', // Savings -> Honey Crema
-        '#0071e3': '#E6A15C', // Brand blue -> Caramel Gold
+        '#5f8575': '#c99a52', // Salary -> Caramel Gold
+        '#a59285': '#c8a47a', // Allowance -> Latte
+        '#c15c3d': '#6b3f24', // Food -> Espresso
+        '#bc6c25': '#d07b3f', // Transport -> Cinnamon
+        '#4e3629': '#8a5a2b', // Bills -> Mocha
+        '#e6a15c': '#e0b46a', // Shopping -> Cream Gold
+        '#d4a373': '#b07b3f', // Savings -> Caramel
+        '#0071e3': '#7a4a26', // Brand blue -> Coffee Brown
     };
     return map[hexColor?.toLowerCase()] || hexColor;
 }

@@ -2,7 +2,12 @@ import { useEffect, useMemo, useState } from 'react';
 import { CalendarDays, Loader2, Target, Trash2 } from 'lucide-react';
 import { api } from '../lib/api.js';
 import { currentMonth, money, readError } from '../lib/format.js';
-import { Empty, Input, Panel, Select } from '../components/ui.jsx';
+import { Empty, Panel, PageHeader } from '../components/ui.jsx';
+import { Alert, AlertDescription } from '../components/ui/alert.jsx';
+import { Button } from '../components/ui/button.jsx';
+import { Input } from '../components/ui/input.jsx';
+import { Label } from '../components/ui/label.jsx';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select.jsx';
 
 export default function Budgets({ baseCurrency, categories, onChanged }) {
     const expenseCategories = useMemo(() => categories.filter((category) => category.type === 'expense'), [categories]);
@@ -16,7 +21,7 @@ export default function Budgets({ baseCurrency, categories, onChanged }) {
 
     useEffect(() => {
         if (!form.category_id && expenseCategories[0]) {
-            setForm((current) => ({ ...current, category_id: expenseCategories[0].id }));
+            setForm((current) => ({ ...current, category_id: String(expenseCategories[0].id) }));
         }
     }, [expenseCategories, form.category_id]);
 
@@ -44,7 +49,7 @@ export default function Budgets({ baseCurrency, categories, onChanged }) {
         setError('');
 
         try {
-            await api.post('/budgets', { ...form, month });
+            await api.post('/budgets', { ...form, amount: Number(form.amount), month });
             setForm({ category_id: form.category_id, amount: '' });
             await loadBudgets();
             onChanged();
@@ -71,64 +76,137 @@ export default function Budgets({ baseCurrency, categories, onChanged }) {
     }
 
     return (
-        <div className="grid gap-6 xl:grid-cols-[400px_1fr]">
+        <div className="flex flex-col gap-6">
+            <PageHeader
+                title="Budgets"
+                description="Set a monthly limit and track your spending against it."
+            />
+            <div className="grid gap-6 lg:grid-cols-[380px_1fr]">
             <Panel title="Set monthly budget">
                 <form onSubmit={saveBudget} className="space-y-4">
-                    <label className="block text-sm font-semibold text-[#d9c4ad]">
-                        Month
-                        <div className="mt-1 flex h-11 items-center gap-2 rounded-md border border-[#8f633e]/60 bg-[#2a1a12]/70 px-3 focus-within:border-[#d7a86e] focus-within:ring-4 focus-within:ring-[#d7a86e]/15">
-                            <CalendarDays size={17} className="text-[#f2c38b]" />
-                            <input type="month" value={month} onChange={(event) => setMonth(event.target.value)} className="w-full bg-transparent text-[#fff8ef] outline-none" />
+                    <div className="space-y-2">
+                        <Label htmlFor="budget-month">Month</Label>
+                        <div className="relative">
+                            <CalendarDays className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+                            <Input
+                                id="budget-month"
+                                type="month"
+                                value={month}
+                                onChange={(event) => setMonth(event.target.value)}
+                                className="pl-9"
+                            />
                         </div>
-                    </label>
-                    <Select label="Expense category" value={form.category_id} onChange={(category_id) => setForm({ ...form, category_id })} options={expenseCategories.map((category) => [category.id, category.name])} />
-                    <Input label={`Budget amount (${baseCurrency})`} type="number" value={form.amount} onChange={(amount) => setForm({ ...form, amount })} />
+                    </div>
+
+                    <div className="space-y-2">
+                        <Label htmlFor="budget-category">Expense category</Label>
+                        <Select
+                            value={String(form.category_id)}
+                            onValueChange={(category_id) => setForm({ ...form, category_id })}
+                        >
+                            <SelectTrigger id="budget-category" className="w-full">
+                                <SelectValue placeholder="Select category" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {expenseCategories.map((category) => (
+                                    <SelectItem key={category.id} value={String(category.id)}>
+                                        {category.name}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                        <Label htmlFor="budget-amount">Budget amount ({baseCurrency})</Label>
+                        <Input
+                            id="budget-amount"
+                            type="number"
+                            step="any"
+                            placeholder="0.00"
+                            value={form.amount}
+                            onChange={(event) => setForm({ ...form, amount: event.target.value })}
+                            required
+                        />
+                    </div>
+
                     {expenseCategories.length === 0 && <Empty text="Create an expense category before setting a budget." />}
-                    {error && <p className="rounded-md border border-red-300/40 bg-red-950/40 px-3 py-2 text-sm text-red-100">{error}</p>}
-                    <button disabled={saving || expenseCategories.length === 0} className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-md bg-[#d7a86e] px-4 font-bold text-[#2a1a12] shadow-lg shadow-black/20 hover:bg-[#e8bb82] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto">
-                        {saving ? <Loader2 size={18} className="animate-spin" /> : <Target size={18} />}
+                    {error && (
+                        <Alert variant="destructive">
+                            <AlertDescription>{error}</AlertDescription>
+                        </Alert>
+                    )}
+
+                    <Button
+                        type="submit"
+                        disabled={saving || expenseCategories.length === 0}
+                        className="w-full gap-2"
+                    >
+                        {saving ? <Loader2 className="size-4 animate-spin" /> : <Target className="size-4" />}
                         Save budget
-                    </button>
+                    </Button>
                 </form>
             </Panel>
 
             <Panel title="Monthly budget progress">
-                {loading && <div className="mb-3 flex h-10 items-center gap-2 rounded-md border border-[#8f633e]/45 bg-[#2a1a12]/60 px-3 text-sm text-[#d9c4ad]"><Loader2 size={16} className="animate-spin text-[#f2c38b]" />Loading budgets...</div>}
+                {loading && (
+                    <div className="mb-3 flex items-center gap-2 text-sm text-muted-foreground">
+                        <Loader2 className="size-4 animate-spin" />
+                        Loading budgets...
+                    </div>
+                )}
                 <div className="space-y-3">
                     {budgets.length === 0 && !loading && <Empty text="No budgets set for this month yet." />}
                     {budgets.map((budget) => (
-                        <BudgetProgress key={budget.id} baseCurrency={baseCurrency} budget={budget} deleting={deletingId === budget.id} onDelete={() => deleteBudget(budget)} />
+                        <BudgetProgress
+                            key={budget.id}
+                            baseCurrency={baseCurrency}
+                            budget={budget}
+                            deleting={deletingId === budget.id}
+                            onDelete={() => deleteBudget(budget)}
+                        />
                     ))}
                 </div>
             </Panel>
+        </div>
         </div>
     );
 }
 
 function BudgetProgress({ baseCurrency, budget, deleting, onDelete }) {
     const progress = Math.min(100, Number(budget.progress_percent || 0));
-    const barColor = budget.is_over ? 'bg-red-300' : progress >= 80 ? 'bg-[#f0a36f]' : 'bg-[#89e6ba]';
+    const barColor = budget.is_over ? 'bg-destructive' : progress >= 80 ? 'bg-amber-500' : 'bg-emerald-500';
 
     return (
-        <div className="rounded-md border border-[#8f633e]/45 bg-[#2a1a12]/45 p-4 text-[#f8efe3]">
+        <div className="rounded-sm bg-card px-4 py-4 ring-1 ring-foreground/5">
             <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                     <p className="truncate font-semibold">{budget.category?.name || 'Budget'}</p>
-                    <p className="mt-1 text-sm text-[#d9c4ad]">
+                    <p className="mt-1 text-sm text-muted-foreground">
                         {money(budget.spent, baseCurrency)} spent of {money(budget.amount, baseCurrency)}
                     </p>
                 </div>
-                <button type="button" disabled={deleting} onClick={onDelete} className="flex size-9 shrink-0 items-center justify-center rounded-md border border-red-300/35 bg-red-950/25 text-red-100 hover:border-red-200/70 hover:bg-red-900/45 disabled:cursor-not-allowed disabled:opacity-50" aria-label="Delete budget">
-                    {deleting ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16} />}
-                </button>
+                <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon-sm"
+                    disabled={deleting}
+                    onClick={onDelete}
+                    className="shrink-0 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                    aria-label="Delete budget"
+                >
+                    {deleting ? <Loader2 className="size-4 animate-spin" /> : <Trash2 className="size-4" />}
+                </Button>
             </div>
-            <div className="mt-3 h-3 overflow-hidden rounded-full bg-[#3a251a]">
+            <div className="mt-3 h-2 overflow-hidden rounded-full bg-muted">
                 <div className={`h-full rounded-full ${barColor}`} style={{ width: `${progress}%` }} />
             </div>
-            <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-xs font-semibold text-[#d9c4ad]">
+            <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-xs font-semibold text-muted-foreground">
                 <span>{budget.progress_percent}% used</span>
-                <span className={budget.is_over ? 'text-red-100' : 'text-[#89e6ba]'}>
-                    {budget.is_over ? `${money(Math.abs(Number(budget.remaining)), baseCurrency)} over` : `${money(budget.remaining, baseCurrency)} left`}
+                <span className={budget.is_over ? 'text-destructive' : 'text-emerald-600 dark:text-emerald-400'}>
+                    {budget.is_over
+                        ? `${money(Math.abs(Number(budget.remaining)), baseCurrency)} over`
+                        : `${money(budget.remaining, baseCurrency)} left`}
                 </span>
             </div>
         </div>

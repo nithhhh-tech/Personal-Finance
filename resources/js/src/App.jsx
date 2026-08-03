@@ -4,8 +4,10 @@ import AppLayout from './components/AppLayout.jsx';
 import { api } from './lib/api.js';
 import { readError } from './lib/format.js';
 import Accounts from './pages/Accounts.jsx';
+import Budgets from './pages/Budgets.jsx';
 import Categories from './pages/Categories.jsx';
 import Dashboard from './pages/Dashboard.jsx';
+import Reports from './pages/Reports.jsx';
 import Transactions from './pages/Transactions.jsx';
 
 export default function App() {
@@ -120,6 +122,10 @@ export default function App() {
             )}
             {activeView === 'accounts' && <Accounts accounts={accounts} onCreated={loadAll} />}
             {activeView === 'categories' && <Categories categories={categories} onCreated={loadAll} />}
+            {activeView === 'budgets' && (
+                <Budgets baseCurrency={user?.base_currency || 'USD'} categories={categories} onChanged={loadAll} />
+            )}
+            {activeView === 'reports' && <Reports baseCurrency={user?.base_currency || 'USD'} />}
         </AppLayout>
     );
 }
