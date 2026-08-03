@@ -21,6 +21,9 @@ export default function App() {
     const [darkMode, setDarkMode] = useState(() => {
         return localStorage.getItem('apple_theme') === 'dark';
     });
+    const [language, setLanguage] = useState(() => {
+        return localStorage.getItem('apple_language') || 'en';
+    });
 
     useEffect(() => {
         if (darkMode) {
@@ -31,6 +34,10 @@ export default function App() {
             localStorage.setItem('apple_theme', 'light');
         }
     }, [darkMode]);
+
+    useEffect(() => {
+        localStorage.setItem('apple_language', language);
+    }, [language]);
 
     function toggleTheme() {
         setDarkMode((prev) => !prev);

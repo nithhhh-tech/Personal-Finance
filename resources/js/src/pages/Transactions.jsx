@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { Search } from 'lucide-react';
 import TransactionForm from '../components/TransactionForm.jsx';
-import { Empty, Panel, Row } from '../components/ui.jsx';
+import { Empty, Panel, TxRow } from '../components/ui.jsx';
 import { money, shortDate } from '../lib/format.js';
+import { Input } from '../components/ui/input.jsx';
 
 export default function Transactions({ transactions, accounts, categories, onCreated }) {
     const [search, setSearch] = useState('');
@@ -13,25 +14,26 @@ export default function Transactions({ transactions, accounts, categories, onCre
     );
 
     return (
-        <div style={{ display: 'grid', gap: 16, gridTemplateColumns: '380px 1fr' }}>
+        <div className="grid gap-6 lg:grid-cols-[400px_1fr]">
             <Panel title="Add money record">
                 <TransactionForm accounts={accounts} categories={categories} onCreated={onCreated} />
             </Panel>
 
             <Panel title="Money record history">
-                <div className="search-bar" style={{ marginBottom: 14 }}>
-                    <Search size={16} color="var(--text-sub)" />
-                    <input
+                <div className="relative mb-4">
+                    <Search className="absolute left-3 top-2.5 size-4 text-muted-foreground" />
+                    <Input
                         id="tx-search-input"
                         value={search}
                         onChange={(event) => setSearch(event.target.value)}
                         placeholder="Search by description or category"
+                        className="pl-9"
                     />
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                    {filtered.length === 0 && <Empty text="No money records yet." />}
+                <div className="flex flex-col gap-2.5">
+                    {filtered.length === 0 && <Empty text="No money records found." />}
                     {filtered.map((item) => (
-                        <Row
+                        <TxRow
                             key={item.id}
                             title={item.description || item.category?.name || 'Transaction'}
                             meta={`${shortDate(item.transaction_date)} · ${item.account?.name || 'Wallet'} · ${item.category?.name || 'Category'}`}

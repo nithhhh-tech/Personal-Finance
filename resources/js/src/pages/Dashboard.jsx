@@ -1,160 +1,146 @@
 import { useMemo } from 'react';
-import {
-    Area, AreaChart, Bar, BarChart, CartesianGrid,
-    Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis,
-} from 'recharts';
+import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { ArrowDownLeft, ArrowUpRight, Banknote, CalendarDays, WalletCards } from 'lucide-react';
 import TransactionForm from '../components/TransactionForm.jsx';
-import { ChartBox, DarkStat, Empty, Metric, Panel, Row } from '../components/ui.jsx';
-import { buildMonthlyData, coffeeColor, money, shortDate } from '../lib/format.js';
-
-// Apple Tooltip
-function MonoTooltip({ active, payload, label }) {
-    if (!active || !payload?.length) return null;
-    return (
-        <div style={{
-            background: 'rgba(255, 255, 255, 0.95)',
-            backdropFilter: 'blur(16px)',
-            border: '1px solid var(--apple-border)',
-            borderRadius: 12,
-            padding: '10px 14px',
-            fontSize: 12.5,
-            boxShadow: '0 8px 24px rgba(0,0,0,0.1)'
-        }}>
-            {label && <p style={{ color: 'var(--apple-sub)', marginBottom: 6, fontSize: 11, fontWeight: 600 }}>{label}</p>}
-            {payload.map((p) => (
-                <p key={p.dataKey} style={{ fontFamily: 'var(--font-mono)', fontWeight: 600, color: p.color || 'var(--apple-dark)', marginBottom: 2 }}>
-                    {p.name}: {money(p.value)}
-                </p>
-            ))}
-        </div>
-    );
-}
+import { Empty, Panel, TxRow, StatCard } from '../components/ui.jsx';
+import { buildMonthlyData, money, shortDate } from '../lib/format.js';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '../components/ui/chart.jsx';
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card.jsx';
 
 export default function Dashboard({ summary, transactions, categories, accounts, onCreated }) {
-    const monthlyData  = useMemo(() => buildMonthlyData(transactions), [transactions]);
+    const monthlyData = useMemo(() => buildMonthlyData(transactions), [transactions]);
     const categoryData = summary?.spending_by_category?.map((item) => ({
-        name:  item.category?.name  || 'Other',
-        total: Number(item.total    || 0),
-        color: coffeeColor(item.category?.color || '#0071E3'),
+        name: item.category?.name || 'Other',
+        total: Number(item.total || 0),
+        fill: item.category?.color || 'var(--chart-1)',
     })) || [];
 
     const sparkData = monthlyData.length ? monthlyData : [{ name: 'Start', income: 0, expense: 0 }];
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-            {/* ── Row 1: Apple Hero Banner + Recent ── */}
-            <div style={{ display: 'grid', gap: 20, gridTemplateColumns: '1fr' }}>
-                <div style={{ display: 'grid', gap: 20, gridTemplateColumns: 'minmax(0, 1.35fr) minmax(0, 0.65fr)' }} className="dash-hero-row">
-                    {/* Hero Panel */}
-                    <div className="hero-panel animate-fade-in-up">
-                        <div style={{ display: 'grid', gap: 24, gridTemplateColumns: '1fr auto', alignItems: 'start' }}>
+        <div className="flex flex-col gap-6">
+            <div className="grid gap-6 lg:grid-cols-[1.4fr_0.6fr]">
+                <Card className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-background to-background p-6">
+                    <div className="flex flex-col justify-between h-full gap-6">
+                        <div className="flex items-start justify-between">
                             <div>
-                                <div className="hero-badge">
-                                    <CalendarDays size={13} />
+                                <div className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary mb-3">
+                                    <CalendarDays className="size-3.5" />
                                     Live Financial Summary
                                 </div>
-                                <p className="hero-label">Net Balance</p>
-                                <p className="hero-balance">{money(summary?.current_balance)}</p>
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginTop: 24 }}>
-                                    <DarkStat label="Earned" value={money(summary?.monthly_income)}  color="text-emerald-300" />
-                                    <DarkStat label="Spent"  value={money(summary?.monthly_expense)} color="text-rose-300" />
-                                    <DarkStat label="Left"   value={money(summary?.monthly_savings)} color="text-sky-300" />
-                                </div>
+                                <p className="text-sm text-muted-foreground font-medium">Net Balance</p>
+                                <h2 className="text-4xl font-extrabold tracking-tight mt-1">{money(summary?.current_balance)}</h2>
                             </div>
-                            <div style={{ width: 200, height: 140, flexShrink: 0 }}>
+                            <div className="w-36 h-20 hidden sm:block">
                                 <ResponsiveContainer width="100%" height="100%">
                                     <AreaChart data={sparkData}>
-                                        <defs>
-                                            <linearGradient id="coffeeIncomeFill" x1="0" x2="0" y1="0" y2="1">
-                                                <stop offset="0%"   stopColor="#E6A15C" stopOpacity="0.6" />
-                                                <stop offset="100%" stopColor="#E6A15C" stopOpacity="0" />
-                                            </linearGradient>
-                                        </defs>
-                                        <Tooltip content={<MonoTooltip />} />
-                                        <Area type="monotone" dataKey="income" name="Earned" stroke="#E6A15C" strokeWidth={3} fill="url(#coffeeIncomeFill)" dot={false} isAnimationActive={true} />
+                                        <Area type="monotone" dataKey="income" stroke="var(--primary)" strokeWidth={2} fill="var(--primary)" fillOpacity={0.1} dot={false} />
                                     </AreaChart>
                                 </ResponsiveContainer>
                             </div>
                         </div>
-                    </div>
 
-                    {/* Recent Records */}
-                    <Panel title="Recent Transactions" className="animate-delay-1">
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                            {transactions.length === 0 && <Empty text="No transactions recorded yet." />}
-                            {transactions.slice(0, 5).map((item) => (
-                                <Row
-                                    key={item.id}
-                                    title={item.description || item.category?.name || 'Transaction'}
-                                    meta={`${shortDate(item.transaction_date)} · ${item.account?.name || 'Wallet'}`}
-                                    value={`${item.type === 'income' ? '+' : '−'}${money(item.base_amount)}`}
-                                    tone={item.type === 'income' ? 'text-emerald-700' : 'text-rose-700'}
-                                />
-                            ))}
+                        <div className="grid grid-cols-3 gap-4 pt-4 border-t border-border/50">
+                            <div>
+                                <p className="text-xs text-muted-foreground font-medium">Earned</p>
+                                <p className="text-lg font-bold text-emerald-600 dark:text-emerald-400">{money(summary?.monthly_income)}</p>
+                            </div>
+                            <div>
+                                <p className="text-xs text-muted-foreground font-medium">Spent</p>
+                                <p className="text-lg font-bold text-rose-600 dark:text-rose-400">{money(summary?.monthly_expense)}</p>
+                            </div>
+                            <div>
+                                <p className="text-xs text-muted-foreground font-medium">Left</p>
+                                <p className="text-lg font-bold text-sky-600 dark:text-sky-400">{money(summary?.monthly_savings)}</p>
+                            </div>
                         </div>
-                    </Panel>
-                </div>
-            </div>
+                    </div>
+                </Card>
 
-            {/* ── Row 2: Apple Metric Cards ── */}
-            <div style={{ display: 'grid', gap: 16, gridTemplateColumns: 'repeat(4, 1fr)' }} className="dash-metrics-row">
-                <Metric title="Earned today"       value={money(summary?.today_income)}   icon={ArrowUpRight}  tone="emerald" />
-                <Metric title="Spent today"        value={money(summary?.today_expense)}  icon={ArrowDownLeft} tone="rose" />
-                <Metric title="Earned this month"  value={money(summary?.monthly_income)} icon={Banknote}      tone="blue" />
-                <Metric title="Active Wallets"     value={accounts.length}                icon={WalletCards}   tone="amber" />
-            </div>
-
-            {/* ── Row 3: Transaction Form + Wallets ── */}
-            <div style={{ display: 'grid', gap: 20, gridTemplateColumns: 'minmax(0, 1fr) 380px' }} className="dash-form-row">
-                <Panel title="Record New Transaction">
-                    <TransactionForm accounts={accounts} categories={categories} onCreated={onCreated} />
-                </Panel>
-                <Panel title="Wallet Balances">
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                        {accounts.length === 0 && <Empty text="Create your first cash, ABA, Wing, or savings wallet." />}
-                        {accounts.map((account) => (
-                            <Row
-                                key={account.id}
-                                title={account.name}
-                                meta={`${account.type} · ${account.currency}`}
-                                value={money(account.current_balance)}
+                <Panel title="Recent Transactions">
+                    <div className="flex flex-col gap-2.5">
+                        {transactions.length === 0 && <Empty text="No transactions recorded yet." />}
+                        {transactions.slice(0, 4).map((item) => (
+                            <TxRow
+                                key={item.id}
+                                title={item.description || item.category?.name || 'Transaction'}
+                                meta={`${shortDate(item.transaction_date)} · ${item.account?.name || 'Wallet'}`}
+                                value={`${item.type === 'income' ? '+' : '−'}${money(item.base_amount)}`}
+                                tone={item.type === 'income' ? 'text-emerald-700' : 'text-rose-700'}
                             />
                         ))}
                     </div>
                 </Panel>
             </div>
 
-            {/* ── Row 4: Apple Motion Charts ── */}
-            <div style={{ display: 'grid', gap: 20, gridTemplateColumns: 'repeat(2, 1fr)' }} className="dash-charts-row">
-                <Panel title="Earned vs. Spent Comparison">
-                    <ChartBox>
-                        <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={monthlyData} barGap={6}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.06)" />
-                                <XAxis dataKey="name" tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: 'var(--apple-sub)' }} />
-                                <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: 'var(--apple-sub)' }} />
-                                <Tooltip content={<MonoTooltip />} />
-                                <Bar dataKey="income"  name="Earned" fill="#E6A15C" radius={[6, 6, 0, 0]} maxBarSize={34} isAnimationActive={true} />
-                                <Bar dataKey="expense" name="Spent"  fill="#4E3629" radius={[6, 6, 0, 0]} maxBarSize={34} isAnimationActive={true} />
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <StatCard title="Earned today" value={money(summary?.today_income)} icon={ArrowUpRight} />
+                <StatCard title="Spent today" value={money(summary?.today_expense)} icon={ArrowDownLeft} />
+                <StatCard title="Earned this month" value={money(summary?.monthly_income)} icon={Banknote} />
+                <StatCard title="Active Wallets" value={accounts.length} icon={WalletCards} />
+            </div>
+
+            <div className="grid gap-6 lg:grid-cols-[1fr_400px]">
+                <Panel title="Record New Transaction">
+                    <TransactionForm accounts={accounts} categories={categories} onCreated={onCreated} />
+                </Panel>
+                <Panel title="Wallet Balances">
+                    <div className="flex flex-col gap-2.5">
+                        {accounts.length === 0 && <Empty text="Create your first wallet to start tracking balances." />}
+                        {accounts.map((account) => (
+                            <TxRow
+                                key={account.id}
+                                title={account.name}
+                                meta={`${account.type.toUpperCase()} · ${account.currency}`}
+                                value={money(account.current_balance, account.currency)}
+                            />
+                        ))}
+                    </div>
+                </Panel>
+            </div>
+
+            <div className="grid gap-6 lg:grid-cols-2">
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Earned vs. Spent Comparison</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <ChartContainer config={{ income: { label: 'Earned', color: 'var(--chart-1)' }, expense: { label: 'Spent', color: 'var(--chart-2)' } }} className="h-72 w-full">
+                            <BarChart data={monthlyData} barGap={4}>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                                <XAxis dataKey="name" tickLine={false} axisLine={false} />
+                                <YAxis tickLine={false} axisLine={false} />
+                                <ChartTooltip content={<ChartTooltipContent formatter={(v) => money(v)} />} />
+                                <Bar dataKey="income" name="Earned" fill="var(--chart-1)" radius={[4, 4, 0, 0]} />
+                                <Bar dataKey="expense" name="Spent" fill="var(--chart-2)" radius={[4, 4, 0, 0]} />
                             </BarChart>
-                        </ResponsiveContainer>
-                    </ChartBox>
-                </Panel>
-                <Panel title="Spending Distribution">
-                    <ChartBox>
+                        </ChartContainer>
+                    </CardContent>
+                </Card>
+
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Spending Distribution</CardTitle>
+                    </CardHeader>
+                    <CardContent>
                         {categoryData.length ? (
-                            <ResponsiveContainer width="100%" height="100%">
+                            <ChartContainer config={{}} className="h-72 w-full">
                                 <PieChart>
-                                    <Pie data={categoryData} dataKey="total" nameKey="name" innerRadius={76} outerRadius={112} paddingAngle={4} strokeWidth={0} isAnimationActive={true}>
-                                        {categoryData.map((entry) => <Cell key={entry.name} fill={entry.color} />)}
+                                    <Pie data={categoryData} dataKey="total" nameKey="name" innerRadius={60} outerRadius={90} paddingAngle={2}>
+                                        {categoryData.map((entry, index) => (
+                                            <Cell key={`cell-${index}`} fill={entry.fill} />
+                                        ))}
                                     </Pie>
-                                    <Tooltip content={<MonoTooltip />} />
+                                    <ChartTooltip content={<ChartTooltipContent formatter={(v) => money(v)} />} />
                                 </PieChart>
-                            </ResponsiveContainer>
-                        ) : <Empty text="Add spending records to see distribution." />}
-                    </ChartBox>
-                </Panel>
+                            </ChartContainer>
+                        ) : (
+                            <div className="h-72 flex items-center justify-center">
+                                <Empty text="Add spending records to see distribution." />
+                            </div>
+                        )}
+                    </CardContent>
+                </Card>
             </div>
         </div>
     );

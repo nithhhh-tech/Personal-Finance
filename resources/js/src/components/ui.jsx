@@ -1,154 +1,76 @@
-// ── Apple Style Primitive UI components ──────────────────────────────────────────
+import { cn } from '@/lib/utils';
+import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card.jsx';
+import { Empty as ShadcnEmpty, EmptyContent, EmptyDescription } from './ui/empty.jsx';
 
-export function Panel({ title, children, className = '' }) {
+export function Panel({ title, description, action, children, className }) {
     return (
-        <section className={`card animate-fade-in-up ${className}`}>
-            {title && <h2 className="card-title">{title}</h2>}
-            {children}
-        </section>
+        <Card className={className}>
+            {(title || action || description) && (
+                <CardHeader>
+                    {title && <CardTitle>{title}</CardTitle>}
+                    {description && <CardDescription>{description}</CardDescription>}
+                    {action && <CardAction>{action}</CardAction>}
+                </CardHeader>
+            )}
+            <CardContent>{children}</CardContent>
+        </Card>
     );
 }
 
-export function ChartBox({ children }) {
-    return <div className="chart-box">{children}</div>;
-}
-
-export function Empty({ text }) {
-    return <div className="empty-state">{text}</div>;
-}
-
-export function NavButton({ icon: Icon, label, active, onClick }) {
+export function Empty({ text, className }) {
     return (
-        <button onClick={onClick} className={`nav-btn${active ? ' active' : ''}`}>
-            <Icon size={18} strokeWidth={active ? 2.2 : 1.8} />
-            <span style={{ fontFamily: 'var(--font-sans)' }}>{label}</span>
-        </button>
+        <ShadcnEmpty className={className}>
+            <EmptyContent>
+                <EmptyDescription>{text}</EmptyDescription>
+            </EmptyContent>
+        </ShadcnEmpty>
     );
 }
 
-export function MiniNav({ icon: Icon, active, onClick }) {
-    return (
-        <button onClick={onClick} className={`mobile-nav-btn${active ? ' active' : ''}`}>
-            <Icon size={20} strokeWidth={active ? 2.2 : 1.8} />
-        </button>
-    );
-}
-
-export function WelcomePoint({ title, text }) {
-    return (
-        <div style={{ padding: '14px 16px', borderRadius: 12, border: '1px solid var(--apple-border)', background: '#FFFFFF' }}>
-            <p style={{ fontWeight: 700, fontSize: 14, color: 'var(--apple-dark)', marginBottom: 2 }}>{title}</p>
-            <p style={{ fontSize: 13, lineHeight: 1.5, color: 'var(--apple-sub)' }}>{text}</p>
-        </div>
-    );
-}
-
-export function PreviewStat({ label, value, tone }) {
-    const styles = {
-        emerald: { background: 'rgba(95, 133, 117, 0.1)', color: '#5F8575' },
-        rose:    { background: 'rgba(193, 92, 61, 0.1)', color: '#C15C3D' },
-        blue:    { background: 'rgba(230, 161, 92, 0.1)',  color: '#E6A15C' },
-    };
-
-    return (
-        <div style={{ ...styles[tone], borderRadius: 12, padding: '12px 14px' }}>
-            <p style={{ fontSize: 10.5, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', opacity: 0.8, marginBottom: 3 }}>{label}</p>
-            <p style={{ fontFamily: 'var(--font-mono)', fontSize: 17, fontWeight: 600, letterSpacing: '-0.02em' }}>{value}</p>
-        </div>
-    );
-}
-
-export function PreviewRow({ title, meta, value, tone }) {
-    const isIncome = tone?.includes('emerald');
-    return (
-        <div className="tx-row">
-            <div>
-                <p className="tx-row-title">{title}</p>
-                <p className="tx-row-meta">{meta}</p>
-            </div>
-            <p className={`tx-row-value ${isIncome ? 'income' : 'expense'}`}>{value}</p>
-        </div>
-    );
-}
-
-export function DarkStat({ label, value, color }) {
-    const colorMap = {
-        'text-emerald-300': '#7FA392',
-        'text-rose-300':    '#DE7D63',
-        'text-sky-300':     '#EBB67B',
-    };
-    return (
-        <div className="dark-stat">
-            <p className="dark-stat-label">{label}</p>
-            <p className="dark-stat-value" style={{ color: colorMap[color] || '#FFFFFF' }}>{value}</p>
-        </div>
-    );
-}
-
-export function Metric({ title, value, icon: Icon, tone }) {
-    const toneClass = {
-        emerald: 'tone-mint',
-        rose:    'tone-coral',
-        blue:    'tone-blue',
-        amber:   'tone-amber',
-    }[tone] || 'tone-blue';
-
-    return (
-        <div className={`metric-card ${toneClass} animate-fade-in-up`}>
-            <div className={`metric-icon ${toneClass}`}>
-                <Icon size={19} strokeWidth={2.2} />
-            </div>
-            <p className="metric-label">{title}</p>
-            <p className="metric-value">{value}</p>
-        </div>
-    );
-}
-
-export function Row({ title, meta, value, tone = '' }) {
+export function TxRow({ title, meta, value, tone = '' }) {
     const isIncome = tone.includes('emerald');
     const isExpense = tone.includes('rose');
-    const valueClass = `tx-row-value${isIncome ? ' income' : isExpense ? ' expense' : ''}`;
 
     return (
-        <div className="tx-row">
-            <div style={{ minWidth: 0 }}>
-                <p className="tx-row-title" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{title}</p>
-                <p className="tx-row-meta"  style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{meta}</p>
+        <div className="flex items-center justify-between gap-3 rounded-lg border border-border/40 bg-card px-3.5 py-3 transition-colors hover:bg-muted/50">
+            <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-medium text-foreground">{title}</p>
+                {meta && <p className="mt-0.5 truncate text-xs text-muted-foreground">{meta}</p>}
             </div>
-            <p className={valueClass}>{value}</p>
+            <p className={cn(
+                "shrink-0 text-sm font-semibold tabular-nums",
+                isIncome && "text-emerald-600 dark:text-emerald-400",
+                isExpense && "text-rose-600 dark:text-rose-400"
+            )}>
+                {value}
+            </p>
         </div>
     );
 }
 
-export function Input({ label, value, onChange, type = 'text' }) {
+export function StatCard({ title, value, hint, icon: Icon, tone }) {
     return (
-        <div>
-            <label className="form-label">{label}</label>
-            <input
-                type={type}
-                value={value}
-                onChange={(event) => onChange(event.target.value)}
-                className="form-input"
-            />
-        </div>
+        <Card className="relative overflow-hidden">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">{title}</CardTitle>
+                {Icon && <Icon className="size-4 text-muted-foreground" />}
+            </CardHeader>
+            <CardContent>
+                <div className="text-2xl font-bold tracking-tight">{value}</div>
+                {hint && <p className="mt-1 text-xs text-muted-foreground">{hint}</p>}
+            </CardContent>
+        </Card>
     );
 }
 
-export function Select({ label, value, onChange, options }) {
+export function PageHeader({ title, description, action }) {
     return (
-        <div>
-            <label className="form-label">{label}</label>
-            <div className="form-select-wrapper">
-                <select
-                    value={value}
-                    onChange={(event) => onChange(event.target.value)}
-                    className="form-select"
-                >
-                    {options.map(([optionValue, optionLabel]) => (
-                        <option key={optionValue} value={optionValue}>{optionLabel}</option>
-                    ))}
-                </select>
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+                <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
+                {description && <p className="mt-1 text-sm text-muted-foreground">{description}</p>}
             </div>
+            {action && <div className="flex items-center gap-2">{action}</div>}
         </div>
     );
 }

@@ -1,51 +1,66 @@
 import { useState } from 'react';
 import CrudPanel from '../components/CrudPanel.jsx';
-import { Input, Select } from '../components/ui.jsx';
+import { Input } from '../components/ui/input.jsx';
+import { Label } from '../components/ui/label.jsx';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select.jsx';
 import { api } from '../lib/api.js';
-import { coffeeColor } from '../lib/format.js';
 
 export default function Categories({ categories, onCreated }) {
-    const [form, setForm] = useState({ name: '', type: 'expense', color: '#E6A15C' });
+    const [form, setForm] = useState({ name: '', type: 'expense', color: '#3b82f6' });
 
     return (
         <CrudPanel
             title="New category"
             onSubmit={async () => {
                 await api.post('/categories', form);
-                setForm({ name: '', type: 'expense', color: '#E6A15C' });
+                setForm({ name: '', type: 'expense', color: '#3b82f6' });
                 onCreated();
             }}
             fields={(
                 <>
-                    <Input label="Name"  value={form.name}  onChange={(name)  => setForm({ ...form, name })} />
-                    <Select label="Type" value={form.type}  onChange={(type)  => setForm({ ...form, type })} options={[['expense', 'Spent'], ['income', 'Earned']]} />
-                    <div>
-                        <label className="form-label">Color</label>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <div className="space-y-2">
+                        <Label htmlFor="cat-name">Name</Label>
+                        <Input id="cat-name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="cat-type">Type</Label>
+                        <Select value={form.type} onValueChange={(val) => setForm({ ...form, type: val })}>
+                            <SelectTrigger id="cat-type" className="w-full">
+                                <SelectValue placeholder="Select type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="expense">Spent</SelectItem>
+                                <SelectItem value="income">Earned</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="cat-color">Color</Label>
+                        <div className="flex items-center gap-3">
                             <input
+                                id="cat-color"
                                 type="color"
                                 value={form.color}
                                 onChange={(e) => setForm({ ...form, color: e.target.value })}
-                                style={{ width: 44, height: 44, borderRadius: 10, border: '1px solid var(--apple-border)', cursor: 'pointer', padding: 3, background: '#FFFFFF' }}
+                                className="size-10 rounded-md border border-input cursor-pointer bg-background p-1"
                             />
-                            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 13.5, color: 'var(--apple-sub)' }}>{form.color}</span>
+                            <span className="font-mono text-xs text-muted-foreground">{form.color}</span>
                         </div>
                     </div>
                 </>
             )}
             listTitle="Categories"
             items={categories.map((category) => ({
-                id:    category.id,
+                id: category.id,
                 title: category.name,
-                meta:  category.type === 'expense' ? 'Spent' : 'Earned',
+                meta: category.type === 'expense' ? 'Spent' : 'Earned',
                 value: (
-                    <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <span className="color-swatch" style={{ background: coffeeColor(category.color) }} />
-                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: 'var(--apple-sub)' }}>{coffeeColor(category.color)}</span>
+                    <span className="flex items-center gap-2">
+                        <span className="size-3 rounded-full" style={{ backgroundColor: category.color }} />
+                        <span className="font-mono text-xs text-muted-foreground">{category.color}</span>
                     </span>
                 ),
             }))}
         />
     );
 }
-

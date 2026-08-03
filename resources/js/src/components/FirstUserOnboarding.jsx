@@ -3,7 +3,12 @@ import { useEffect, useState } from 'react';
 import { api } from '../lib/api.js';
 import { readError } from '../lib/format.js';
 import TransactionForm from './TransactionForm.jsx';
-import { Input, Select } from './ui.jsx';
+import { Input } from './ui/input.jsx';
+import { Label } from './ui/label.jsx';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select.jsx';
+import { Button } from './ui/button.jsx';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card.jsx';
+import { Alert, AlertDescription } from './ui/alert.jsx';
 
 export default function FirstUserOnboarding({ accounts, baseCurrency, categories, onCreated, transactions }) {
     const needsWallet = accounts.length === 0;
@@ -40,65 +45,98 @@ export default function FirstUserOnboarding({ accounts, baseCurrency, categories
     }
 
     return (
-        <section className="overflow-hidden rounded-lg border border-[#8f633e]/55 bg-[#2a1a12] text-[#f8efe3] shadow-xl shadow-black/25">
+        <Card className="overflow-hidden shadow-lg border">
             <div className="grid gap-0 xl:grid-cols-[0.9fr_1.1fr]">
-                <div className="border-b border-[#8f633e]/35 bg-[#3a251a]/88 p-4 sm:p-6 xl:border-b-0 xl:border-r">
-                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#f2c38b]">First setup</p>
-                    <h2 className="mt-3 text-2xl font-bold tracking-normal text-[#fff8ef] sm:text-3xl">Set up your tracker</h2>
-                    <p className="mt-3 max-w-xl text-sm leading-6 text-[#d9c4ad]">Start with one wallet, then add one earn or spend record. After that, your dashboard fills itself from your real data.</p>
+                <div className="border-b bg-muted/40 p-6 xl:border-b-0 xl:border-r">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">First setup</p>
+                    <h2 className="mt-2 text-2xl font-bold tracking-tight">Set up your tracker</h2>
+                    <p className="mt-2 text-sm text-muted-foreground">Start with one wallet, then add one earn or spend record.</p>
 
                     <div className="mt-6 grid gap-3">
-                        <SetupStep done={!needsWallet} active={needsWallet} icon={WalletCards} title="Create first wallet" text="Cash, ABA, Wing, savings, or any place you keep money." />
-                        <SetupStep done={!needsRecord && !needsWallet} active={needsRecord} icon={ReceiptText} title="Add first money record" text="Record one earn or spend item to begin your history." />
+                        <SetupStep done={!needsWallet} active={needsWallet} icon={WalletCards} title="Create first wallet" text="Cash, ABA, Wing, or savings." />
+                        <SetupStep done={!needsRecord && !needsWallet} active={needsRecord} icon={ReceiptText} title="Add first money record" text="Record one item to begin your history." />
                     </div>
                 </div>
 
-                <div className="p-4 sm:p-6">
+                <div className="p-6">
                     {needsWallet && (
                         <form onSubmit={createWallet} className="space-y-4">
                             <div>
-                                <p className="text-sm font-semibold uppercase tracking-[0.14em] text-[#f2c38b]">Wallet</p>
-                                <h3 className="mt-2 text-xl font-semibold">Create your first wallet</h3>
+                                <h3 className="text-lg font-semibold">Create your first wallet</h3>
                             </div>
                             <div className="grid gap-4 sm:grid-cols-2">
-                                <Input label="Name" value={walletForm.name} onChange={(name) => setWalletForm({ ...walletForm, name })} />
-                                <Select label="Type" value={walletForm.type} onChange={(type) => setWalletForm({ ...walletForm, type })} options={[['cash', 'Cash'], ['aba', 'ABA'], ['wing', 'Wing'], ['wallet', 'Wallet'], ['savings', 'Savings']]} />
-                                <Select label="Currency" value={walletForm.currency} onChange={(currency) => setWalletForm({ ...walletForm, currency })} options={[['USD', 'USD'], ['KHR', 'KHR']]} />
-                                <Input label="Starting balance" type="number" value={walletForm.starting_balance} onChange={(starting_balance) => setWalletForm({ ...walletForm, starting_balance })} />
+                                <div className="space-y-2">
+                                    <Label>Name</Label>
+                                    <Input value={walletForm.name} onChange={(e) => setWalletForm({ ...walletForm, name: e.target.value })} required />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Type</Label>
+                                    <Select value={walletForm.type} onValueChange={(val) => setWalletForm({ ...walletForm, type: val })}>
+                                        <SelectTrigger className="w-full">
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="cash">Cash</SelectItem>
+                                            <SelectItem value="aba">ABA</SelectItem>
+                                            <SelectItem value="wing">Wing</SelectItem>
+                                            <SelectItem value="wallet">Wallet</SelectItem>
+                                            <SelectItem value="savings">Savings</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Currency</Label>
+                                    <Select value={walletForm.currency} onValueChange={(val) => setWalletForm({ ...walletForm, currency: val })}>
+                                        <SelectTrigger className="w-full">
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="USD">USD</SelectItem>
+                                            <SelectItem value="KHR">KHR</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Starting balance</Label>
+                                    <Input type="number" step="any" value={walletForm.starting_balance} onChange={(e) => setWalletForm({ ...walletForm, starting_balance: e.target.value })} required />
+                                </div>
                             </div>
-                            {error && <p className="rounded-md border border-red-300/40 bg-red-950/40 px-3 py-2 text-sm text-red-100">{error}</p>}
-                            <button disabled={saving} className="inline-flex h-11 items-center gap-2 rounded-md bg-[#d7a86e] px-4 font-bold text-[#2a1a12] shadow-lg shadow-black/20 hover:bg-[#e8bb82] disabled:cursor-not-allowed disabled:opacity-60">
-                                {saving ? <Loader2 size={18} className="animate-spin" /> : <WalletCards size={18} />}
+                            {error && (
+                                <Alert variant="destructive">
+                                    <AlertDescription>{error}</AlertDescription>
+                                </Alert>
+                            )}
+                            <Button disabled={saving} className="gap-2">
+                                {saving ? <Loader2 className="size-4 animate-spin" /> : <WalletCards className="size-4" />}
                                 Create wallet
-                            </button>
+                            </Button>
                         </form>
                     )}
 
                     {needsRecord && (
                         <div className="space-y-4">
                             <div>
-                                <p className="text-sm font-semibold uppercase tracking-[0.14em] text-[#f2c38b]">First record</p>
-                                <h3 className="mt-2 text-xl font-semibold">Add one earn or spend record</h3>
+                                <h3 className="text-lg font-semibold">Add one earn or spend record</h3>
                             </div>
                             <TransactionForm accounts={accounts} baseCurrency={baseCurrency} categories={categories} onCreated={onCreated} />
                         </div>
                     )}
                 </div>
             </div>
-        </section>
+        </Card>
     );
 }
 
 function SetupStep({ active, done, icon: Icon, text, title }) {
     return (
-        <div className={`rounded-md border px-4 py-3 ${active ? 'border-[#d7a86e]/70 bg-[#2a1a12]/65' : 'border-[#8f633e]/45 bg-[#2a1a12]/35'}`}>
+        <div className={`rounded-lg border p-3.5 transition-colors ${active ? 'border-primary bg-primary/5' : 'border-border/50 bg-card'}`}>
             <div className="flex items-start gap-3">
-                <div className={`flex size-10 shrink-0 items-center justify-center rounded-md ${done ? 'bg-[#244238] text-[#89e6ba]' : 'bg-[#d7a86e] text-[#2a1a12]'}`}>
-                    {done ? <CheckCircle2 size={20} /> : <Icon size={20} />}
+                <div className={`flex size-8 shrink-0 items-center justify-center rounded-md ${done ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' : 'bg-primary text-primary-foreground'}`}>
+                    {done ? <CheckCircle2 className="size-4" /> : <Icon className="size-4" />}
                 </div>
                 <div>
-                    <p className="font-semibold text-[#fff8ef]">{title}</p>
-                    <p className="mt-1 text-sm leading-5 text-[#d9c4ad]">{text}</p>
+                    <p className="font-semibold text-sm">{title}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">{text}</p>
                 </div>
             </div>
         </div>
