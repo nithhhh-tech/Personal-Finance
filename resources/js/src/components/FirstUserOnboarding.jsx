@@ -2,6 +2,7 @@ import { CheckCircle2, Loader2, ReceiptText, WalletCards } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { api } from '../lib/api.js';
 import { readError } from '../lib/format.js';
+import { CURRENCY_OPTIONS } from '../lib/currencies.js';
 import TransactionForm from './TransactionForm.jsx';
 import { Input, Select } from './ui.jsx';
 
@@ -63,7 +64,7 @@ export default function FirstUserOnboarding({ accounts, baseCurrency, categories
                             <div className="grid gap-4 sm:grid-cols-2">
                                 <Input label="Name" value={walletForm.name} onChange={(name) => setWalletForm({ ...walletForm, name })} />
                                 <Select label="Type" value={walletForm.type} onChange={(type) => setWalletForm({ ...walletForm, type })} options={[['cash', 'Cash'], ['aba', 'ABA'], ['wing', 'Wing'], ['wallet', 'Wallet'], ['savings', 'Savings']]} />
-                                <Select label="Currency" value={walletForm.currency} onChange={(currency) => setWalletForm({ ...walletForm, currency })} options={[['USD', 'USD'], ['KHR', 'KHR']]} />
+                                <Select label="Currency" value={walletForm.currency} onChange={(currency) => setWalletForm({ ...walletForm, currency })} options={CURRENCY_OPTIONS} />
                                 <Input label="Starting balance" type="number" value={walletForm.starting_balance} onChange={(starting_balance) => setWalletForm({ ...walletForm, starting_balance })} />
                             </div>
                             {error && <p className="rounded-md border border-red-300/40 bg-red-950/40 px-3 py-2 text-sm text-red-100">{error}</p>}

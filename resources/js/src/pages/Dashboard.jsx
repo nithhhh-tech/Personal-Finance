@@ -4,7 +4,7 @@ import { ArrowDownLeft, ArrowUpRight, Banknote, CalendarDays, Target, WalletCard
 import FirstUserOnboarding from '../components/FirstUserOnboarding.jsx';
 import TransactionForm from '../components/TransactionForm.jsx';
 import { ChartBox, DarkStat, Empty, Metric, Panel, Row } from '../components/ui.jsx';
-import { buildMonthlyData, money, shortDate } from '../lib/format.js';
+import { buildMonthlyData, money, shortDate, today } from '../lib/format.js';
 
 export default function Dashboard({ summary, transactions, categories, accounts, baseCurrency, onCreated }) {
     const monthlyData = useMemo(() => buildMonthlyData(transactions), [transactions]);
@@ -14,6 +14,14 @@ export default function Dashboard({ summary, transactions, categories, accounts,
         color: item.category?.color || '#64748b',
     })) || [];
     const sparkData = monthlyData.length ? monthlyData : [{ name: 'Start', income: 0, expense: 0 }];
+
+    const localToday = useMemo(() => new Date().toLocaleDateString('en-CA'), []);
+    const todayTransactions = useMemo(() => {
+        return transactions.filter((item) => {
+            const itemDate = String(item.transaction_date || '').slice(0, 10);
+            return itemDate === localToday || itemDate === today;
+        });
+    }, [transactions, localToday]);
 
     return (
         <div className="space-y-6">
@@ -50,10 +58,10 @@ export default function Dashboard({ summary, transactions, categories, accounts,
                         </div>
                     </div>
                 </section>
-                <Panel title="Recent money records">
+                <Panel title="Today's money records">
                     <div className="space-y-3">
-                        {transactions.length === 0 && <Empty text="Add your first money record." />}
-                        {transactions.slice(0, 5).map((item) => (
+                        {todayTransactions.length === 0 && <Empty text="No money records added today." />}
+                        {todayTransactions.slice(0, 5).map((item) => (
                             <Row key={item.id} title={item.description || item.category?.name || 'Transaction'} meta={`${shortDate(item.transaction_date)} / ${item.account?.name || 'Wallet'}`} value={`${item.type === 'income' ? '+' : '-'}${money(item.base_amount, baseCurrency)}`} tone={item.type === 'income' ? 'text-[#89e6ba]' : 'text-[#f0a36f]'} />
                         ))}
                     </div>

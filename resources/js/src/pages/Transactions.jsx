@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { ChevronLeft, ChevronRight, Edit3, Loader2, Search, Trash2, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Copy, Edit3, Loader2, Search, Trash2, X } from 'lucide-react';
 import { api } from '../lib/api.js';
+import { toast } from '../components/Toast.jsx';
 import TransactionForm from '../components/TransactionForm.jsx';
 import { Empty, Panel, Row } from '../components/ui.jsx';
 import { money, shortDate } from '../lib/format.js';
@@ -17,6 +18,7 @@ export default function Transactions({ transactions, accounts, baseCurrency, cat
     const [editSaving, setEditSaving] = useState(false);
     const [pendingDelete, setPendingDelete] = useState(null);
     const [deletingId, setDeletingId] = useState(null);
+    const [duplicatingId, setDuplicatingId] = useState(null);
 
     useEffect(() => {
         setServerTransactions(transactions);
@@ -88,11 +90,26 @@ export default function Transactions({ transactions, accounts, baseCurrency, cat
         setDeletingId(pendingDelete.id);
         try {
             await api.delete(`/transactions/${pendingDelete.id}`);
+            toast('Money record deleted.', 'info');
             onCreated();
             loadTransactions(page);
             setPendingDelete(null);
         } finally {
             setDeletingId(null);
+        }
+    }
+
+    async function duplicateTransaction(item) {
+        setDuplicatingId(item.id);
+        try {
+            await api.post(`/transactions/${item.id}/duplicate`);
+            toast('Money record duplicated for today!', 'success');
+            onCreated();
+            loadTransactions(page);
+        } catch (err) {
+            toast('Could not duplicate record.', 'error');
+        } finally {
+            setDuplicatingId(null);
         }
     }
 
@@ -144,6 +161,16 @@ export default function Transactions({ transactions, accounts, baseCurrency, cat
                                             aria-label="Edit money record"
                                         >
                                             <Edit3 size={16} />
+                                        </button>
+                                        <button
+                                            type="button"
+                                            disabled={duplicatingId === item.id}
+                                            onClick={() => duplicateTransaction(item)}
+                                            className="flex size-9 items-center justify-center rounded-md border border-[#8f633e]/55 bg-[#3a251a] text-[#d9c4ad] hover:border-[#d7a86e]/70 hover:text-[#fff8ef] disabled:cursor-not-allowed disabled:opacity-50"
+                                            aria-label="Duplicate money record"
+                                            title="Duplicate to today"
+                                        >
+                                            {duplicatingId === item.id ? <Loader2 size={16} className="animate-spin" /> : <Copy size={16} />}
                                         </button>
                                         <button
                                             type="button"

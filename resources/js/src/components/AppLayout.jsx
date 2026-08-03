@@ -1,4 +1,4 @@
-import { ChartColumnIncreasing, CircleDollarSign, Folder, LayoutDashboard, LogOut, ReceiptText, RefreshCw, Target, WalletCards, X } from 'lucide-react';
+import { ChartColumnIncreasing, CircleDollarSign, Folder, LayoutDashboard, LogOut, ReceiptText, RefreshCw, Settings, Target, UserCog, WalletCards, X } from 'lucide-react';
 import { useState } from 'react';
 import { money, viewTitle } from '../lib/format.js';
 import TransactionForm from './TransactionForm.jsx';
@@ -29,6 +29,7 @@ export default function AppLayout({
         { view: 'reports', icon: ChartColumnIncreasing, label: 'Reports', mobileLabel: 'Report' },
         { view: 'accounts', icon: WalletCards, label: 'Wallets', mobileLabel: 'Wallets' },
         { view: 'categories', icon: Folder, label: 'Categories', mobileLabel: 'Groups' },
+        { view: 'profile', icon: UserCog, label: 'Profile & Settings', mobileLabel: 'Profile' },
     ];
 
     function closeQuickAdd() {
@@ -47,13 +48,12 @@ export default function AppLayout({
     return (
         <div className="min-h-screen app-bg text-[#f8efe3]">
             <aside className="fixed inset-y-0 left-0 hidden w-72 border-r border-[#8f633e]/35 bg-[#2a1a12] text-[#f8efe3] lg:block">
-                <div className="flex h-20 items-center gap-3 border-b border-[#8f633e]/35 px-6">
-                    <div className="flex size-11 items-center justify-center rounded-lg bg-[#d7a86e] text-[#2a1a12] shadow-lg shadow-black/25 ring-1 ring-[#f2c38b]/25">
-                        <WalletCards size={24} />
-                    </div>
+                <div className="flex h-20 items-center border-b border-[#8f633e]/35 px-6">
                     <div>
-                        <p className="text-lg font-semibold">My Money Tracker</p>
-                        <p className="text-xs text-[#d9c4ad]">Daily Spend Tracker</p>
+                        <span className="block text-xl font-black leading-6 text-[#fff8ef]">
+                            Pocket<span className="text-[#d7a86e]">Ledger</span>
+                        </span>
+                        <span className="block text-xs font-medium leading-4 text-[#d9c4ad]">Personal finance</span>
                     </div>
                 </div>
                 <nav className="space-y-2 p-4">

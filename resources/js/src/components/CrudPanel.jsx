@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Plus } from 'lucide-react';
 import { readError } from '../lib/format.js';
+import { toast } from './Toast.jsx';
 import { Empty, Panel, Row } from './ui.jsx';
 
 export default function CrudPanel({ title, fields, onSubmit, listTitle, items }) {
@@ -12,8 +13,11 @@ export default function CrudPanel({ title, fields, onSubmit, listTitle, items })
 
         try {
             await onSubmit();
+            toast('Created successfully!', 'success');
         } catch (err) {
-            setError(readError(err));
+            const msg = readError(err);
+            setError(msg);
+            toast(msg, 'error');
         }
     }
 

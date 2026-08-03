@@ -41,7 +41,7 @@ class DashboardController extends Controller
             'monthly_budget_remaining' => $monthlyBudgetAmount - $monthlyBudgetSpent,
             'monthly_budget_progress' => $monthlyBudgetAmount > 0 ? round(($monthlyBudgetSpent / $monthlyBudgetAmount) * 100, 1) : 0,
             'active_budgets' => $budgets->count(),
-            'recent_transactions' => $user->transactions()->with(['account','category'])->latest()->limit(5)->get(),
+            'recent_transactions' => $user->transactions()->with(['account','category'])->whereDate('transaction_date', $today)->latest()->limit(5)->get(),
             'spending_by_category' => $user->transactions()->selectRaw('category_id, sum(base_amount) as total')->where('type', 'expense')->whereBetween('transaction_date', [$monthStart, $monthEnd])->with('category')->groupBy('category_id')->get(),
         ];
     }

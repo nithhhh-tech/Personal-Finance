@@ -4,9 +4,20 @@ export const currentMonth = today.slice(0, 7);
 export function money(value, currency = 'USD') {
     const amount = Number(value || 0);
 
-    if (currency === 'KHR') return `${new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(amount)} KHR`;
+    try {
+        const noDecimalCurrencies = ['KHR', 'VND', 'JPY'];
+        const decimals = noDecimalCurrencies.includes(currency) ? 0 : 2;
 
-    return `$${amount.toFixed(2)}`;
+        return new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: currency,
+            minimumFractionDigits: decimals,
+            maximumFractionDigits: decimals,
+        }).format(amount);
+    } catch {
+        if (currency === 'KHR') return `${new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(amount)} KHR`;
+        return `${currency} ${amount.toFixed(2)}`;
+    }
 }
 
 export function buildMonthlyData(transactions) {
@@ -30,6 +41,7 @@ export function viewTitle(view) {
         reports: 'Reports',
         accounts: 'Wallets',
         categories: 'Categories',
+        profile: 'Profile & Settings',
     }[view] || 'Dashboard';
 }
 

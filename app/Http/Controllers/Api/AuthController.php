@@ -14,7 +14,7 @@ class AuthController extends Controller
 {
     public function register(Request $request)
     {
-        $data = $request->validate(['name' => ['required','string','max:255'], 'email' => ['required','email','unique:users,email'], 'password' => ['required','min:8'], 'base_currency' => ['nullable','in:USD,KHR']]);
+        $data = $request->validate(['name' => ['required','string','max:255'], 'email' => ['required','email','unique:users,email'], 'password' => ['required','min:8'], 'base_currency' => ['nullable','string','size:3']]);
         $user = User::create($data);
         $this->createDefaultCategories($user);
         return response()->json(['user' => $user, 'token' => $user->createToken('api')->plainTextToken], 201);

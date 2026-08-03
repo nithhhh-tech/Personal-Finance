@@ -75,7 +75,7 @@ class TransactionController extends Controller
             'category_id' => [$rule, Rule::exists('categories', 'id')->where('user_id', $userId)],
             'type' => [$rule, 'in:income,expense'],
             'amount' => [$rule, 'numeric', 'gt:0'],
-            'currency' => ['sometimes', 'in:USD,KHR'],
+            'currency' => ['sometimes', 'string', 'size:3'],
             'exchange_rate' => ['sometimes', 'numeric', 'gt:0'],
             'transaction_date' => [$rule, 'date'],
             'payment_method' => ['nullable', 'string', 'max:80'],
@@ -109,6 +109,15 @@ class TransactionController extends Controller
         $expense = $account->transactions()->where('type', 'expense')->sum('base_amount');
         $account->forceFill(['current_balance' => $account->starting_balance + $income - $expense])->save();
     }
+
+    public function duplicate(Request $request, string $id)
+    {
+        $original = $request->user()->transactions()->findOrFail($id);
+        $data = $original->only(['account_id', 'category_id', 'type', 'amount', 'currency', 'exchange_rate', 'base_amount', 'payment_method', 'description', 'tags']);
+        $data['user_id'] = $request->user()->id;
+        $data['transaction_date'] = now()->toDateString();
+        $copy = Transaction::create($data);
+        $this->recalculateAccount($copy->account);
+        return $copy->load(['account', 'category']);
+    }
 }
-
-

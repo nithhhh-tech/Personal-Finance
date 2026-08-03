@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
 import AuthScreen from './components/AuthScreen.jsx';
 import AppLayout from './components/AppLayout.jsx';
+import { ToastContainer } from './components/Toast.jsx';
 import { api } from './lib/api.js';
 import { readError } from './lib/format.js';
 import Accounts from './pages/Accounts.jsx';
 import Budgets from './pages/Budgets.jsx';
 import Categories from './pages/Categories.jsx';
 import Dashboard from './pages/Dashboard.jsx';
+import Profile from './pages/Profile.jsx';
 import Reports from './pages/Reports.jsx';
 import Transactions from './pages/Transactions.jsx';
 
@@ -65,48 +67,52 @@ export default function App() {
         setUser(null);
     }
 
-    if (!token) return <AuthScreen onAuthed={saveToken} />;
-    if (!user) return <LoadingSession loading={loading} notice={notice} onLogout={() => logout(false)} />;
+    if (!token) return <><AuthScreen onAuthed={saveToken} /><ToastContainer /></>;
+    if (!user) return <><LoadingSession loading={loading} notice={notice} onLogout={() => logout(false)} /><ToastContainer /></>;
 
     return (
-        <AppLayout
-            accounts={accounts}
-            activeView={activeView}
-            baseCurrency={user.base_currency || 'USD'}
-            categories={categories}
-            loading={loading}
-            notice={notice}
-            onQuickCreated={loadAll}
-            onRefresh={loadAll}
-            onLogout={() => logout()}
-            setActiveView={setActiveView}
-            summary={summary}
-            user={user}
-        >
-            {activeView === 'dashboard' && (
-                <Dashboard
-                    accounts={accounts}
-                    baseCurrency={user.base_currency || 'USD'}
-                    categories={categories}
-                    onCreated={loadAll}
-                    summary={summary}
-                    transactions={transactions}
-                />
-            )}
-            {activeView === 'transactions' && (
-                <Transactions
-                    accounts={accounts}
-                    baseCurrency={user.base_currency || 'USD'}
-                    categories={categories}
-                    onCreated={loadAll}
-                    transactions={transactions}
-                />
-            )}
-            {activeView === 'accounts' && <Accounts accounts={accounts} onCreated={loadAll} />}
-            {activeView === 'budgets' && <Budgets baseCurrency={user.base_currency || 'USD'} categories={categories} onChanged={loadAll} />}
-            {activeView === 'reports' && <Reports baseCurrency={user.base_currency || 'USD'} />}
-            {activeView === 'categories' && <Categories categories={categories} onCreated={loadAll} />}
-        </AppLayout>
+        <>
+            <AppLayout
+                accounts={accounts}
+                activeView={activeView}
+                baseCurrency={user.base_currency || 'USD'}
+                categories={categories}
+                loading={loading}
+                notice={notice}
+                onQuickCreated={loadAll}
+                onRefresh={loadAll}
+                onLogout={() => logout()}
+                setActiveView={setActiveView}
+                summary={summary}
+                user={user}
+            >
+                {activeView === 'dashboard' && (
+                    <Dashboard
+                        accounts={accounts}
+                        baseCurrency={user.base_currency || 'USD'}
+                        categories={categories}
+                        onCreated={loadAll}
+                        summary={summary}
+                        transactions={transactions}
+                    />
+                )}
+                {activeView === 'transactions' && (
+                    <Transactions
+                        accounts={accounts}
+                        baseCurrency={user.base_currency || 'USD'}
+                        categories={categories}
+                        onCreated={loadAll}
+                        transactions={transactions}
+                    />
+                )}
+                {activeView === 'accounts' && <Accounts accounts={accounts} onCreated={loadAll} />}
+                {activeView === 'budgets' && <Budgets baseCurrency={user.base_currency || 'USD'} categories={categories} onChanged={loadAll} />}
+                {activeView === 'reports' && <Reports baseCurrency={user.base_currency || 'USD'} />}
+                {activeView === 'categories' && <Categories categories={categories} onCreated={loadAll} />}
+                {activeView === 'profile' && <Profile user={user} onUpdated={loadAll} />}
+            </AppLayout>
+            <ToastContainer />
+        </>
     );
 }
 
