@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Plus, RefreshCw, RotateCcw, Zap } from 'lucide-react';
 import { api } from '../lib/api.js';
 import { readError, today } from '../lib/format.js';
 import { CURRENCY_OPTIONS, DEFAULT_FALLBACK_RATES } from '../lib/currencies.js';
 import { toast } from './Toast.jsx';
 import { Empty, Input, Select } from './ui.jsx';
+import { getQuickPresets } from '../lib/quickPresets.js';
 
 function formatLastUpdated(isoString) {
     if (!isoString) return '';
@@ -21,6 +22,7 @@ function blankForm(type = 'expense') {
         type,
         account_id: '',
         category_id: '',
+        sub_category_id: '',
         amount: '',
         currency: 'USD',
         exchange_rate: 1,
@@ -40,6 +42,7 @@ function formFromTransaction(transaction, fallbackType) {
         type: transaction.type || fallbackType,
         account_id: transaction.account_id || '',
         category_id: transaction.category_id || '',
+        sub_category_id: transaction.sub_category_id || '',
         amount: transaction.amount || '',
         currency,
         exchange_rate: Number(transaction.exchange_rate || fallbackRate),
@@ -49,15 +52,21 @@ function formFromTransaction(transaction, fallbackType) {
     };
 }
 
-export default function TransactionForm({ accounts, baseCurrency = 'USD', categories, hideType = false, initialType = 'expense', onCreated, onSavingChange = null, transaction = null }) {
+export default function TransactionForm({ accounts = [], baseCurrency = 'USD', categories = [], hideType = false, initialType = 'expense', onCreated, onSavingChange = null, transaction = null }) {
     const [form, setForm] = useState(() => formFromTransaction(transaction, initialType));
     const [error, setError] = useState('');
     const [rateInfo, setRateInfo] = useState(null);
     const [loadingRate, setLoadingRate] = useState(false);
     const [isCustomRate, setIsCustomRate] = useState(false);
 
+    const safeCategories = Array.isArray(categories) ? categories : [];
+    const safeAccounts = Array.isArray(accounts) ? accounts : [];
+
     const editing = Boolean(transaction);
-    const availableCategories = categories.filter((category) => category.type === form.type);
+    // Filter parent categories (parent_id is null or not set)
+    const availableCategories = safeCategories.filter((category) => category?.type === form.type && !category?.parent_id);
+    const selectedCategory = safeCategories.find((c) => String(c?.id) === String(form.category_id));
+    const availableSubcategories = (selectedCategory?.subcategories || safeCategories.filter((c) => String(c?.parent_id) === String(form.category_id))) || [];
     const needsExchangeRate = form.currency !== baseCurrency;
 
     const fetchLiveRate = async (forceRefresh = false, targetCurrency = form.currency) => {
@@ -86,15 +95,15 @@ export default function TransactionForm({ accounts, baseCurrency = 'USD', catego
     }, [form.currency, needsExchangeRate]);
 
     useEffect(() => {
-        if (!editing && !form.account_id && accounts[0]) setForm((current) => ({ ...current, account_id: accounts[0].id }));
-    }, [accounts, editing, form.account_id]);
+        if (!editing && !form.account_id && safeAccounts[0]) setForm((current) => ({ ...current, account_id: safeAccounts[0].id }));
+    }, [safeAccounts, editing, form.account_id]);
 
     useEffect(() => {
         const first = availableCategories[0];
         if (first && !availableCategories.some((category) => String(category.id) === String(form.category_id))) {
             setForm((current) => ({ ...current, category_id: first.id }));
         }
-    }, [form.type, categories]);
+    }, [form.type, safeCategories]);
 
     useEffect(() => {
         if (!editing) setForm((current) => ({ ...current, type: initialType, category_id: '' }));
@@ -164,9 +173,92 @@ export default function TransactionForm({ accounts, baseCurrency = 'USD', catego
         ? [10000, 50000, 100000, 500000]
         : [5, 10, 20, 50];
 
+    // Only show presets the user has explicitly configured in Profile & Settings
+    const allQuickExpenses = useMemo(() => {
+        const userPresets = getQuickPresets();
+        // Enrich user presets with category/subcategory IDs from current categories
+        return userPresets.map((preset) => {
+            let parentCat = preset.parent_id
+                ? safeCategories.find((c) => String(c.id) === String(preset.parent_id))
+                : null;
+            if (!parentCat && preset.mainName) {
+                parentCat = safeCategories.find(
+                    (c) => c.type === 'expense' && !c.parent_id &&
+                    (c.name.toLowerCase().includes(preset.mainName.toLowerCase()) ||
+                     preset.mainName.toLowerCase().includes(c.name.toLowerCase()))
+                );
+            }
+            let subCat = preset.sub_category_id
+                ? safeCategories.find((c) => String(c.id) === String(preset.sub_category_id))
+                : null;
+            if (!subCat && parentCat && preset.subName) {
+                subCat = safeCategories.find(
+                    (c) => String(c.parent_id) === String(parentCat.id) &&
+                    c.name.toLowerCase().includes(preset.subName.toLowerCase())
+                );
+            }
+            return {
+                ...preset,
+                parent_id: parentCat?.id ?? preset.parent_id,
+                sub_category_id: subCat?.id ?? preset.sub_category_id,
+            };
+        });
+    }, [safeCategories]);
+
+    function applyQuickPreset(preset) {
+        let parentCat = preset.parent_id ? safeCategories.find((c) => String(c.id) === String(preset.parent_id)) : null;
+        if (!parentCat) {
+            const mainTarget = preset.mainName || 'Food';
+            parentCat = safeCategories.find((c) => c.type === 'expense' && !c.parent_id && (c.name.toLowerCase().includes(mainTarget.toLowerCase()) || mainTarget.toLowerCase().includes(c.name.toLowerCase())));
+        }
+        let subCat = preset.sub_category_id ? safeCategories.find((c) => String(c.id) === String(preset.sub_category_id)) : null;
+        if (!subCat && parentCat) {
+            const subTarget = preset.subName || '';
+            subCat = safeCategories.find((c) => String(c.parent_id) === String(parentCat.id) && subTarget && c.name.toLowerCase().includes(subTarget.toLowerCase()));
+        }
+
+        setForm((current) => ({
+            ...current,
+            type: 'expense',
+            amount: String(preset.amount),
+            description: preset.label.replace(/^[^\s]+\s*/, ''),
+            category_id: parentCat ? parentCat.id : current.category_id,
+            sub_category_id: subCat ? subCat.id : '',
+        }));
+        toast(`Pre-filled ${preset.label} (${form.currency === 'USD' ? '$' : ''}${preset.amount})! Click Save.`, 'info');
+    }
+
     return (
         <form onSubmit={submit} className="space-y-4">
-            {accounts.length === 0 && <Empty text="Add a wallet before recording money." />}
+            {safeAccounts.length === 0 && <Empty text="Add a wallet before recording money." />}
+            
+            {/* Quick Frequent Expenses Presets — only shows user-configured shortcuts from Settings */}
+            {form.type === 'expense' && (
+                <div className="rounded-lg border border-[#8f633e]/40 bg-[#2a1a12]/60 p-2.5">
+                    <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#f2c38b]">⚡️ Quick 1-Tap Expenses</p>
+                    {allQuickExpenses.length === 0 ? (
+                        <p className="mt-2 text-[11px] text-[#b89a7f]">
+                            No shortcuts set up yet.{' '}
+                            <span className="font-semibold text-[#f2c38b]">Go to Profile &amp; Settings → Quick Shortcuts</span>{' '}to add your frequent expenses.
+                        </p>
+                    ) : (
+                        <div className="mt-2 flex flex-wrap gap-2">
+                            {allQuickExpenses.map((preset) => (
+                                <button
+                                    key={preset.id || preset.label}
+                                    type="button"
+                                    onClick={() => applyQuickPreset(preset)}
+                                    className="inline-flex items-center gap-1 rounded-full border border-[#8f633e]/60 bg-[#3a251a] px-3 py-1 text-xs font-bold text-[#fff8ef] hover:border-[#d7a86e] hover:bg-[#4a3022] transition shadow-sm"
+                                >
+                                    <span>{preset.emoji || '⚡'} {preset.label}</span>
+                                    <span className="text-[#f2c38b] font-mono">${Number(preset.amount).toFixed(2)}</span>
+                                </button>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            )}
+
             <div className="grid gap-4 sm:grid-cols-2">
                 {!hideType && <Select label="Type" value={form.type} onChange={(type) => setForm({ ...form, type, category_id: '' })} options={[['expense', 'Spent'], ['income', 'Earned']]} />}
                 <div>
@@ -186,8 +278,16 @@ export default function TransactionForm({ accounts, baseCurrency = 'USD', catego
                     </div>
                 </div>
                 <Select label="Currency" value={form.currency} onChange={handleCurrencyChange} options={CURRENCY_OPTIONS} />
-                <Select label="Wallet" value={form.account_id} onChange={(account_id) => setForm({ ...form, account_id })} options={accounts.map((account) => [account.id, account.name])} />
-                <Select label="Category" value={form.category_id} onChange={(category_id) => setForm({ ...form, category_id })} options={availableCategories.map((category) => [category.id, category.name])} />
+                <Select label="Wallet" value={form.account_id} onChange={(account_id) => setForm({ ...form, account_id })} options={safeAccounts.map((account) => [account.id, account.name])} />
+                <Select label="Category" value={form.category_id} onChange={(category_id) => setForm({ ...form, category_id, sub_category_id: '' })} options={availableCategories.map((category) => [category.id, category.name])} />
+                {availableSubcategories.length > 0 && (
+                    <Select
+                        label="Sub-Category (Optional)"
+                        value={form.sub_category_id}
+                        onChange={(sub_category_id) => setForm({ ...form, sub_category_id })}
+                        options={[['', 'None / General'], ...availableSubcategories.map((sub) => [sub.id, sub.name])]}
+                    />
+                )}
                 {needsExchangeRate && (
                     <div className="block text-sm font-semibold text-[#d9c4ad]">
                         <div className="flex items-center justify-between">

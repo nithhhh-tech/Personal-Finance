@@ -89,6 +89,15 @@ input[type='number']::-webkit-outer-spin-button {
     animation: quick-drawer-backdrop-out 320ms ease-in both;
 }
 
+.mobile-sheet-panel {
+    animation: mobile-sheet-in 320ms cubic-bezier(0.16, 1, 0.3, 1) both;
+    will-change: transform, opacity;
+}
+
+.mobile-sheet-panel-out {
+    animation: mobile-sheet-out 260ms cubic-bezier(0.7, 0, 0.84, 0) both;
+}
+
 @keyframes auth-drawer-in {
     from {
         opacity: 0;
@@ -144,3 +153,28 @@ input[type='number']::-webkit-outer-spin-button {
         opacity: 0;
     }
 }
+
+@keyframes mobile-sheet-in {
+    from {
+        opacity: 0;
+        transform: translateY(100%);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes mobile-sheet-out {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateY(100%);
+    }
+}
+

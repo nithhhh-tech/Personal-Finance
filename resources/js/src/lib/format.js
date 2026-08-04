@@ -22,11 +22,14 @@ export function money(value, currency = 'USD') {
 
 export function buildMonthlyData(transactions) {
     const map = new Map();
+    const list = Array.isArray(transactions) ? transactions : (Array.isArray(transactions?.data) ? transactions.data : []);
 
-    transactions.forEach((item) => {
+    list.forEach((item) => {
+        if (!item) return;
         const name = item.transaction_date?.slice(5, 10) || 'Today';
         const current = map.get(name) || { name, income: 0, expense: 0 };
-        current[item.type] += Number(item.base_amount || 0);
+        const typeKey = item.type === 'income' ? 'income' : 'expense';
+        current[typeKey] = (current[typeKey] || 0) + Number(item.base_amount || 0);
         map.set(name, current);
     });
 

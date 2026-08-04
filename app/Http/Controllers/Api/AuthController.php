@@ -70,8 +70,26 @@ class AuthController extends Controller
 
     private function createDefaultCategories(User $user): void
     {
-        foreach ([['Salary','income','#16a34a'], ['Allowance','income','#0d9488'], ['Food','expense','#dc2626'], ['Transport','expense','#ea580c'], ['Bills','expense','#7c3aed'], ['Shopping','expense','#2563eb'], ['Savings','expense','#0891b2']] as [$name, $type, $color]) {
-            $user->categories()->create(['name' => $name, 'type' => $type, 'color' => $color]);
+        $defaults = [
+            ['Salary', 'income', '#16a34a', []],
+            ['Allowance', 'income', '#0d9488', []],
+            ['Food', 'expense', '#dc2626', ['Breakfast', 'Lunch', 'Dinner', 'Coffee', 'Drinks', 'Snacks']],
+            ['Transport', 'expense', '#ea580c', ['Fuel', 'Grab', 'Parking', 'Maintenance']],
+            ['Bills', 'expense', '#7c3aed', ['Internet', 'Phone', 'Electricity', 'Water']],
+            ['Shopping', 'expense', '#2563eb', ['Clothes', 'Electronics', 'Personal items']],
+            ['Savings', 'expense', '#0891b2', []],
+        ];
+
+        foreach ($defaults as [$name, $type, $color, $subs]) {
+            $parent = $user->categories()->create(['name' => $name, 'type' => $type, 'color' => $color]);
+            foreach ($subs as $subName) {
+                $user->categories()->create([
+                    'name' => $subName,
+                    'type' => $type,
+                    'color' => $color,
+                    'parent_id' => $parent->id,
+                ]);
+            }
         }
     }
 }

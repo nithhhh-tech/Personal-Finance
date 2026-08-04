@@ -1,17 +1,17 @@
 import { useEffect, useState } from 'react';
-import { ChevronLeft, ChevronRight, Copy, Edit3, Loader2, Search, Trash2, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Edit3, Loader2, Plus, RotateCcw, Search, Trash2, X } from 'lucide-react';
 import { api } from '../lib/api.js';
 import { toast } from '../components/Toast.jsx';
 import TransactionForm from '../components/TransactionForm.jsx';
 import { Empty, Panel, Row } from '../components/ui.jsx';
-import { money, shortDate } from '../lib/format.js';
+import { money, readError, shortDate } from '../lib/format.js';
 
 export default function Transactions({ transactions, accounts, baseCurrency, categories, onCreated }) {
     const [search, setSearch] = useState('');
     const [filters, setFilters] = useState({ type: '', account_id: '', category_id: '', from: '', to: '' });
     const [page, setPage] = useState(1);
-    const [serverTransactions, setServerTransactions] = useState(transactions);
-    const [pagination, setPagination] = useState({ current_page: 1, last_page: 1, total: transactions.length });
+    const [serverTransactions, setServerTransactions] = useState(Array.isArray(transactions) ? transactions : []);
+    const [pagination, setPagination] = useState({ current_page: 1, last_page: 1, total: Array.isArray(transactions) ? transactions.length : 0 });
     const [historyLoading, setHistoryLoading] = useState(false);
     const [editingTransaction, setEditingTransaction] = useState(null);
     const [editClosing, setEditClosing] = useState(false);
@@ -20,8 +20,10 @@ export default function Transactions({ transactions, accounts, baseCurrency, cat
     const [deletingId, setDeletingId] = useState(null);
     const [duplicatingId, setDuplicatingId] = useState(null);
 
+    const safeTransactions = Array.isArray(serverTransactions) ? serverTransactions : [];
+
     useEffect(() => {
-        setServerTransactions(transactions);
+        setServerTransactions(Array.isArray(transactions) ? transactions : []);
     }, [transactions]);
 
     useEffect(() => {
@@ -48,12 +50,15 @@ export default function Transactions({ transactions, accounts, baseCurrency, cat
                 },
             });
             const payload = response.data;
-            setServerTransactions(payload.data || payload);
+            const dataList = Array.isArray(payload.data) ? payload.data : (Array.isArray(payload) ? payload : []);
+            setServerTransactions(dataList);
             setPagination({
                 current_page: payload.current_page || 1,
                 last_page: payload.last_page || 1,
-                total: payload.total ?? (payload.data || payload).length,
+                total: payload.total ?? dataList.length,
             });
+        } catch (err) {
+            toast(readError(err) || 'Could not load money records.', 'error');
         } finally {
             setHistoryLoading(false);
         }
@@ -94,6 +99,8 @@ export default function Transactions({ transactions, accounts, baseCurrency, cat
             onCreated();
             loadTransactions(page);
             setPendingDelete(null);
+        } catch (err) {
+            toast(readError(err) || 'Could not delete record.', 'error');
         } finally {
             setDeletingId(null);
         }
@@ -115,38 +122,70 @@ export default function Transactions({ transactions, accounts, baseCurrency, cat
 
     return (
         <>
+            {/* Mobile hint bar — visible only on small screens */}
+            <div className="mb-4 flex items-center gap-3 rounded-xl border border-[#8f633e]/40 bg-[#3a251a]/70 px-4 py-3 xl:hidden">
+                <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[#d7a86e] text-[#2a1a12]">
+                    <Plus size={18} strokeWidth={2.8} />
+                </div>
+                <div className="min-w-0">
+                    <p className="text-sm font-bold text-[#fff8ef]">Tap <span className="text-[#f2c38b]">+</span> below to add a record</p>
+                    <p className="text-xs text-[#b89a7f]">Use the centre button in the bottom bar</p>
+                </div>
+            </div>
+
             <div className="grid gap-6 xl:grid-cols-[400px_1fr]">
-                <Panel title="Add money record"><TransactionForm accounts={accounts} baseCurrency={baseCurrency} categories={categories} onCreated={handleCreated} /></Panel>
+                {/* Add form — hidden on mobile, shown side-by-side on xl+ */}
+                <div className="hidden xl:block">
+                    <Panel title="Add money record"><TransactionForm accounts={accounts} baseCurrency={baseCurrency} categories={categories} onCreated={handleCreated} /></Panel>
+                </div>
+
                 <Panel title="Money record history">
-                    <div className="mb-4 grid gap-3 lg:grid-cols-[1.3fr_0.7fr_1fr]">
-                        <div className="flex h-11 items-center gap-2 rounded-md border border-[#8f633e]/60 bg-[#2a1a12]/70 px-3">
-                            <Search size={18} className="text-[#d9c4ad]" />
-                            <input value={search} onChange={(event) => { setSearch(event.target.value); setPage(1); }} placeholder="Search money records" className="w-full bg-transparent text-[#fff8ef] outline-none placeholder:text-[#b89a7f]" />
+                    {/* Filters */}
+                    <div className="mb-4 space-y-2.5">
+                        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
+                            <div className="flex h-10 items-center gap-2 rounded-md border border-[#8f633e]/60 bg-[#2a1a12]/70 px-3">
+                                <Search size={16} className="shrink-0 text-[#d9c4ad]" />
+                                <input value={search} onChange={(event) => { setSearch(event.target.value); setPage(1); }} placeholder="Search records..." className="w-full bg-transparent text-xs text-[#fff8ef] outline-none placeholder:text-[#b89a7f] sm:text-sm" />
+                            </div>
+                            <select value={filters.type} onChange={(event) => updateFilter('type', event.target.value)} className="h-10 rounded-md border border-[#8f633e]/60 bg-[#2a1a12]/70 px-2.5 text-xs text-[#fff8ef] outline-none sm:text-sm">
+                                <option value="">All types</option>
+                                <option value="income">Earned</option>
+                                <option value="expense">Spent</option>
+                            </select>
+                            <select value={filters.account_id} onChange={(event) => updateFilter('account_id', event.target.value)} className="h-10 rounded-md border border-[#8f633e]/60 bg-[#2a1a12]/70 px-2.5 text-xs text-[#fff8ef] outline-none sm:text-sm">
+                                <option value="">All wallets</option>
+                                {accounts.map((account) => <option key={account.id} value={account.id}>{account.name}</option>)}
+                            </select>
+                            <select value={filters.category_id} onChange={(event) => updateFilter('category_id', event.target.value)} className="h-10 rounded-md border border-[#8f633e]/60 bg-[#2a1a12]/70 px-2.5 text-xs text-[#fff8ef] outline-none sm:text-sm">
+                                <option value="">All categories</option>
+                                {categories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}
+                            </select>
                         </div>
-                        <select value={filters.type} onChange={(event) => updateFilter('type', event.target.value)} className="h-11 rounded-md border border-[#8f633e]/60 bg-[#2a1a12]/70 px-3 text-[#fff8ef] outline-none">
-                            <option value="">All types</option>
-                            <option value="income">Earned</option>
-                            <option value="expense">Spent</option>
-                        </select>
-                        <select value={filters.account_id} onChange={(event) => updateFilter('account_id', event.target.value)} className="h-11 rounded-md border border-[#8f633e]/60 bg-[#2a1a12]/70 px-3 text-[#fff8ef] outline-none">
-                            <option value="">All wallets</option>
-                            {accounts.map((account) => <option key={account.id} value={account.id}>{account.name}</option>)}
-                        </select>
-                        <select value={filters.category_id} onChange={(event) => updateFilter('category_id', event.target.value)} className="h-11 rounded-md border border-[#8f633e]/60 bg-[#2a1a12]/70 px-3 text-[#fff8ef] outline-none">
-                            <option value="">All categories</option>
-                            {categories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}
-                        </select>
-                        <input type="date" value={filters.from} onChange={(event) => updateFilter('from', event.target.value)} className="h-11 rounded-md border border-[#8f633e]/60 bg-[#2a1a12]/70 px-3 text-[#fff8ef] outline-none" />
-                        <input type="date" value={filters.to} onChange={(event) => updateFilter('to', event.target.value)} className="h-11 rounded-md border border-[#8f633e]/60 bg-[#2a1a12]/70 px-3 text-[#fff8ef] outline-none" />
+                        <div className="flex flex-wrap items-center gap-2 text-xs text-[#d9c4ad]">
+                            <span className="font-semibold text-[#f2c38b]">Date:</span>
+                            <input type="date" value={filters.from} onChange={(event) => updateFilter('from', event.target.value)} className="h-9 rounded-md border border-[#8f633e]/60 bg-[#2a1a12]/70 px-2 text-xs text-[#fff8ef] outline-none" />
+                            <span>to</span>
+                            <input type="date" value={filters.to} onChange={(event) => updateFilter('to', event.target.value)} className="h-9 rounded-md border border-[#8f633e]/60 bg-[#2a1a12]/70 px-2 text-xs text-[#fff8ef] outline-none" />
+                            {(search || filters.type || filters.account_id || filters.category_id || filters.from || filters.to) && (
+                                <button
+                                    type="button"
+                                    onClick={() => { setSearch(''); setFilters({ type: '', account_id: '', category_id: '', from: '', to: '' }); setPage(1); }}
+                                    className="ml-auto inline-flex h-8 items-center gap-1 rounded-md border border-[#8f633e]/50 bg-[#3a251a] px-2.5 text-xs font-semibold text-[#f2c38b] hover:bg-[#4a3022]"
+                                >
+                                    Clear filters
+                                </button>
+                            )}
+                        </div>
                     </div>
+
                     {historyLoading && <div className="mb-3 flex h-10 items-center gap-2 rounded-md border border-[#8f633e]/45 bg-[#2a1a12]/60 px-3 text-sm text-[#d9c4ad]"><Loader2 size={16} className="animate-spin text-[#f2c38b]" />Loading records...</div>}
                     <div className="space-y-3">
-                        {serverTransactions.length === 0 && <Empty text="No money records yet." />}
-                        {serverTransactions.map((item) => (
+                        {safeTransactions.length === 0 && <Empty text="No money records yet." />}
+                        {safeTransactions.map((item) => (
                             <Row
                                 key={item.id}
                                 title={item.description || item.category?.name || 'Transaction'}
-                                meta={`${shortDate(item.transaction_date)} / ${item.account?.name || 'Wallet'} / ${item.category?.name || 'Category'}`}
+                                meta={`${shortDate(item.transaction_date)} / ${item.account?.name || 'Wallet'} / ${item.category?.name || 'Category'}${item.sub_category?.name || item.subCategory?.name ? ` › ${item.sub_category?.name || item.subCategory?.name}` : ''}`}
                                 value={`${item.type === 'income' ? '+' : '-'}${money(item.base_amount, baseCurrency)}`}
                                 tone={item.type === 'income' ? 'text-[#89e6ba]' : 'text-[#f0a36f]'}
                                 action={(
@@ -166,11 +205,12 @@ export default function Transactions({ transactions, accounts, baseCurrency, cat
                                             type="button"
                                             disabled={duplicatingId === item.id}
                                             onClick={() => duplicateTransaction(item)}
-                                            className="flex size-9 items-center justify-center rounded-md border border-[#8f633e]/55 bg-[#3a251a] text-[#d9c4ad] hover:border-[#d7a86e]/70 hover:text-[#fff8ef] disabled:cursor-not-allowed disabled:opacity-50"
-                                            aria-label="Duplicate money record"
-                                            title="Duplicate to today"
+                                            className="inline-flex h-9 items-center gap-1 rounded-md border border-[#8f633e]/70 bg-[#3a251a] px-2.5 text-xs font-extrabold text-[#f2c38b] hover:border-[#d7a86e] hover:bg-[#4a3022] hover:text-white disabled:cursor-not-allowed disabled:opacity-50 transition shadow-sm"
+                                            aria-label="Repeat money record for today"
+                                            title="Repeat this expense/income for today"
                                         >
-                                            {duplicatingId === item.id ? <Loader2 size={16} className="animate-spin" /> : <Copy size={16} />}
+                                            {duplicatingId === item.id ? <Loader2 size={13} className="animate-spin" /> : <RotateCcw size={13} />}
+                                            Repeat
                                         </button>
                                         <button
                                             type="button"

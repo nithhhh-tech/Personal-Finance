@@ -27,6 +27,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/exchange-rate', [ExchangeRateController::class, 'show']);
     Route::apiResource('accounts', AccountController::class);
     Route::apiResource('budgets', BudgetController::class);
+    Route::post('/categories/seed-defaults', [CategoryController::class, 'seedDefaults']);
     Route::apiResource('categories', CategoryController::class);
     Route::apiResource('transactions', TransactionController::class);
     Route::post('/transactions/{id}/duplicate', [TransactionController::class, 'duplicate']);

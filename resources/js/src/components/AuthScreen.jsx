@@ -5,8 +5,8 @@ import { readError } from '../lib/format.js';
 import { CURRENCY_OPTIONS } from '../lib/currencies.js';
 import { Input, Select } from './ui.jsx';
 
-export default function AuthScreen({ onAuthed }) {
-    const [mode, setMode] = useState('welcome');
+export default function AuthScreen({ onAuthed, initialMode = 'login' }) {
+    const [mode, setMode] = useState(initialMode);
     const [form, setForm] = useState({ name: '', email: '', password: '', password_confirmation: '', token: '', base_currency: 'USD' });
     const [error, setError] = useState('');
     const [message, setMessage] = useState('');

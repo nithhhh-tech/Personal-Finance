@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import AuthScreen from './components/AuthScreen.jsx';
 import AppLayout from './components/AppLayout.jsx';
+import ErrorBoundary from './components/ErrorBoundary.jsx';
 import { ToastContainer } from './components/Toast.jsx';
 import { api } from './lib/api.js';
 import { readError } from './lib/format.js';
@@ -44,9 +45,9 @@ export default function App() {
             ]);
 
             setSummary(summaryRes.data);
-            setAccounts(accountsRes.data);
-            setCategories(categoriesRes.data);
-            setTransactions(transactionsRes.data.data || transactionsRes.data);
+            setAccounts(Array.isArray(accountsRes.data) ? accountsRes.data : (accountsRes.data?.data ?? []));
+            setCategories(Array.isArray(categoriesRes.data) ? categoriesRes.data : (categoriesRes.data?.data ?? []));
+            setTransactions(Array.isArray(transactionsRes.data) ? transactionsRes.data : (transactionsRes.data?.data ?? []));
         } catch (error) {
             if (error.response?.status === 401) logout(false);
             else setNotice(readError(error));
@@ -55,19 +56,27 @@ export default function App() {
         }
     }
 
+    const [loggingOut, setLoggingOut] = useState(false);
+
     function saveToken(nextToken) {
         localStorage.setItem('pocketledger_token', nextToken);
         setToken(nextToken);
     }
 
     async function logout(callApi = true) {
-        if (callApi && token) await api.post('/logout').catch(() => {});
-        localStorage.removeItem('pocketledger_token');
-        setToken(null);
-        setUser(null);
+        setLoggingOut(true);
+        try {
+            if (callApi && token) {
+                await api.post('/logout').catch(() => {});
+            }
+        } finally {
+            localStorage.removeItem('pocketledger_token');
+            window.location.href = '/';
+        }
     }
 
-    if (!token) return <><AuthScreen onAuthed={saveToken} /><ToastContainer /></>;
+    if (loggingOut) return <><LoadingSession loading={true} notice="Signing out of your session..." onLogout={() => {}} /><ToastContainer /></>;
+    if (!token) return <><AuthScreen onAuthed={saveToken} initialMode="login" /><ToastContainer /></>;
     if (!user) return <><LoadingSession loading={loading} notice={notice} onLogout={() => logout(false)} /><ToastContainer /></>;
 
     return (
@@ -86,30 +95,32 @@ export default function App() {
                 summary={summary}
                 user={user}
             >
-                {activeView === 'dashboard' && (
-                    <Dashboard
-                        accounts={accounts}
-                        baseCurrency={user.base_currency || 'USD'}
-                        categories={categories}
-                        onCreated={loadAll}
-                        summary={summary}
-                        transactions={transactions}
-                    />
-                )}
-                {activeView === 'transactions' && (
-                    <Transactions
-                        accounts={accounts}
-                        baseCurrency={user.base_currency || 'USD'}
-                        categories={categories}
-                        onCreated={loadAll}
-                        transactions={transactions}
-                    />
-                )}
-                {activeView === 'accounts' && <Accounts accounts={accounts} onCreated={loadAll} />}
-                {activeView === 'budgets' && <Budgets baseCurrency={user.base_currency || 'USD'} categories={categories} onChanged={loadAll} />}
-                {activeView === 'reports' && <Reports baseCurrency={user.base_currency || 'USD'} />}
-                {activeView === 'categories' && <Categories categories={categories} onCreated={loadAll} />}
-                {activeView === 'profile' && <Profile user={user} onUpdated={loadAll} />}
+                <ErrorBoundary key={activeView}>
+                    {activeView === 'dashboard' && (
+                        <Dashboard
+                            accounts={accounts}
+                            baseCurrency={user.base_currency || 'USD'}
+                            categories={categories}
+                            onCreated={loadAll}
+                            summary={summary}
+                            transactions={transactions}
+                        />
+                    )}
+                    {activeView === 'transactions' && (
+                        <Transactions
+                            accounts={accounts}
+                            baseCurrency={user.base_currency || 'USD'}
+                            categories={categories}
+                            onCreated={loadAll}
+                            transactions={transactions}
+                        />
+                    )}
+                    {activeView === 'accounts' && <Accounts accounts={accounts} onCreated={loadAll} />}
+                    {activeView === 'budgets' && <Budgets baseCurrency={user.base_currency || 'USD'} categories={categories} onChanged={loadAll} />}
+                    {activeView === 'reports' && <Reports baseCurrency={user.base_currency || 'USD'} />}
+                    {activeView === 'categories' && <Categories categories={categories} onCreated={loadAll} />}
+                    {activeView === 'profile' && <Profile categories={categories} user={user} onUpdated={loadAll} onLogout={() => logout()} />}
+                </ErrorBoundary>
             </AppLayout>
             <ToastContainer />
         </>

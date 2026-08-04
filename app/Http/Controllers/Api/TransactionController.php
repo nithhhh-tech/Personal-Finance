@@ -10,9 +10,16 @@ use Illuminate\Validation\Rule;
 
 class TransactionController extends Controller
 {
+    private function getWithRelations(): array
+    {
+        return \Illuminate\Support\Facades\Schema::hasColumn('transactions', 'sub_category_id')
+            ? ['account', 'category', 'subCategory']
+            : ['account', 'category'];
+    }
+
     public function index(Request $request)
     {
-        return $request->user()->transactions()->with(['account','category'])
+        return $request->user()->transactions()->with($this->getWithRelations())
             ->when($request->type, fn ($q, $type) => $q->where('type', $type))
             ->when($request->account_id, fn ($q, $id) => $q->where('account_id', $id))
             ->when($request->category_id, fn ($q, $id) => $q->where('category_id', $id))
@@ -32,12 +39,12 @@ class TransactionController extends Controller
         $data = $this->normalizeCurrencyData($data, $request->user()->base_currency);
         $transaction = Transaction::create($data);
         $this->recalculateAccount($transaction->account);
-        return $transaction->load(['account','category']);
+        return $transaction->load($this->getWithRelations());
     }
 
     public function show(Request $request, string $id)
     {
-        return $request->user()->transactions()->with(['account','category'])->findOrFail($id);
+        return $request->user()->transactions()->with($this->getWithRelations())->findOrFail($id);
     }
 
     public function update(Request $request, string $id)
@@ -53,7 +60,7 @@ class TransactionController extends Controller
         $transaction->update($data);
         $this->recalculateAccount($oldAccount);
         $this->recalculateAccount($transaction->fresh()->account);
-        return $transaction->fresh(['account','category']);
+        return $transaction->fresh($this->getWithRelations());
     }
 
     public function destroy(Request $request, string $id)
@@ -73,6 +80,7 @@ class TransactionController extends Controller
         return $request->validate([
             'account_id' => [$rule, Rule::exists('accounts', 'id')->where('user_id', $userId)],
             'category_id' => [$rule, Rule::exists('categories', 'id')->where('user_id', $userId)],
+            'sub_category_id' => ['nullable', 'integer', Rule::exists('categories', 'id')->where('user_id', $userId)],
             'type' => [$rule, 'in:income,expense'],
             'amount' => [$rule, 'numeric', 'gt:0'],
             'currency' => ['sometimes', 'string', 'size:3'],
@@ -113,11 +121,11 @@ class TransactionController extends Controller
     public function duplicate(Request $request, string $id)
     {
         $original = $request->user()->transactions()->findOrFail($id);
-        $data = $original->only(['account_id', 'category_id', 'type', 'amount', 'currency', 'exchange_rate', 'base_amount', 'payment_method', 'description', 'tags']);
+        $data = $original->only(['account_id', 'category_id', 'sub_category_id', 'type', 'amount', 'currency', 'exchange_rate', 'base_amount', 'payment_method', 'description', 'tags']);
         $data['user_id'] = $request->user()->id;
         $data['transaction_date'] = now()->toDateString();
         $copy = Transaction::create($data);
         $this->recalculateAccount($copy->account);
-        return $copy->load(['account', 'category']);
+        return $copy->load(['account', 'category', 'subCategory']);
     }
 }

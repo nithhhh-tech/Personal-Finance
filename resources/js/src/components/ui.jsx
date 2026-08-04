@@ -33,14 +33,21 @@ export function NavButton({ icon: Icon, label, active, onClick }) {
     );
 }
 
-export function MiniNav({ icon: Icon, label, active, onClick }) {
+export function MiniNav({ icon: Icon, label, active, onClick, badge }) {
     return (
         <button
+            type="button"
             onClick={onClick}
-            className={`flex h-14 min-w-0 flex-col items-center justify-center gap-1 rounded-md px-1 text-[10px] font-semibold leading-none ${active ? 'bg-[#d7a86e] text-[#2a1a12]' : 'bg-[#2a1a12]/65 text-[#d9c4ad]'}`}
+            className={`relative flex h-13 w-full min-w-0 flex-col items-center justify-center gap-1 rounded-xl px-1 py-1 text-[10px] font-semibold leading-none transition-all duration-150 ${active ? 'bg-[#d7a86e] text-[#2a1a12] shadow-md shadow-black/30' : 'text-[#d9c4ad] hover:bg-[#3a251a]/70 hover:text-[#fff8ef]'}`}
         >
-            <Icon size={17} />
-            <span className="max-w-full truncate">{label}</span>
+            <Icon size={19} className="shrink-0" />
+            <span className="w-full truncate text-center font-semibold leading-none">{label}</span>
+            {badge && (
+                <span className="absolute top-1.5 right-2 flex size-2">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#d7a86e] opacity-75"></span>
+                    <span className="relative inline-flex size-2 rounded-full bg-[#f2c38b]"></span>
+                </span>
+            )}
         </button>
     );
 }
@@ -56,9 +63,9 @@ export function WelcomePoint({ title, text }) {
 
 export function DarkStat({ label, value, color }) {
     return (
-        <div className="rounded-md border border-[#8f633e]/35 bg-[#3a251a]/85 p-3">
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#d9c4ad]">{label}</p>
-            <p className={`mt-1 text-lg font-semibold ${color}`}>{value}</p>
+        <div className="flex flex-col justify-center rounded-lg border border-[#8f633e]/35 bg-[#3a251a]/85 px-2.5 py-2 text-center sm:p-3 sm:text-left">
+            <p className="text-[10px] font-bold uppercase tracking-wide text-[#d9c4ad] sm:text-xs sm:tracking-[0.14em]">{label}</p>
+            <p className={`mt-0.5 truncate text-base font-bold sm:mt-1 sm:text-lg ${color}`}>{value}</p>
         </div>
     );
 }
@@ -72,28 +79,28 @@ export function Metric({ title, value, icon: Icon, tone }) {
     };
 
     return (
-        <div className="rounded-lg border border-[#8f633e]/45 bg-[#3a251a]/88 p-4 text-[#f8efe3] shadow-lg shadow-black/20 backdrop-blur sm:p-5">
+        <div className="rounded-lg border border-[#8f633e]/45 bg-[#3a251a]/88 p-3.5 text-[#f8efe3] shadow-lg shadow-black/20 backdrop-blur sm:p-5">
             <div className="flex items-center justify-between">
-                <p className="text-sm font-medium text-[#d9c4ad]">{title}</p>
-                <div className={`flex size-10 items-center justify-center rounded-md ${colors[tone]}`}>
-                    <Icon size={20} />
+                <p className="text-xs font-medium text-[#d9c4ad] sm:text-sm">{title}</p>
+                <div className={`flex size-9 items-center justify-center rounded-md sm:size-10 ${colors[tone]}`}>
+                    <Icon size={18} />
                 </div>
             </div>
-            <p className="mt-4 text-xl font-semibold tracking-normal sm:text-2xl">{value}</p>
+            <p className="mt-3 truncate text-lg font-bold tracking-normal sm:mt-4 sm:text-2xl">{value}</p>
         </div>
     );
 }
 
 export function Row({ title, meta, value, tone = 'text-[#f2c38b]', action = null }) {
     return (
-        <div className="flex flex-col gap-3 rounded-md border border-[#8f633e]/45 bg-[#2a1a12]/45 px-4 py-3 text-[#f8efe3] transition hover:border-[#d7a86e]/60 hover:bg-[#4a3022]/65 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+        <div className="flex flex-col gap-2 rounded-lg border border-[#8f633e]/45 bg-[#2a1a12]/45 p-3 text-[#f8efe3] transition hover:border-[#d7a86e]/60 hover:bg-[#4a3022]/65 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-4 sm:py-3">
             <div className="min-w-0 flex-1">
-                <p className="truncate font-semibold">{title}</p>
-                <p className="truncate text-sm text-[#d9c4ad]">{meta}</p>
+                <p className="truncate text-sm font-semibold sm:text-base">{title}</p>
+                <p className="truncate text-xs text-[#d9c4ad] sm:text-sm">{meta}</p>
             </div>
-            <div className="flex w-full shrink-0 items-center justify-between gap-2 sm:w-auto sm:justify-end">
-                <p className={`font-semibold ${tone}`}>{value}</p>
-                {action}
+            <div className="flex shrink-0 items-center justify-between gap-2 border-t border-[#8f633e]/20 pt-2 sm:border-t-0 sm:pt-0 sm:justify-end">
+                <p className={`text-sm font-bold sm:text-base ${tone}`}>{value}</p>
+                {action && <div className="flex items-center gap-1.5">{action}</div>}
             </div>
         </div>
     );
@@ -135,3 +142,35 @@ export function Select({ label, value, onChange, options, variant = 'light' }) {
         </label>
     );
 }
+
+export function WalletCard({ name, type, currency, balance, onClick }) {
+    const typeConfig = {
+        aba: { label: 'ABA Bank', bg: 'bg-[#182d47]/80 border-[#3182ce]/50 text-[#90cdf4]', badge: 'bg-[#2b6cb0] text-white' },
+        wing: { label: 'Wing Bank', bg: 'bg-[#193d2d]/80 border-[#38a169]/50 text-[#9ae6b4]', badge: 'bg-[#2f855a] text-white' },
+        cash: { label: 'Cash Wallet', bg: 'bg-[#422e19]/80 border-[#d69e2e]/50 text-[#f6ad55]', badge: 'bg-[#b7791f] text-white' },
+        savings: { label: 'Savings Vault', bg: 'bg-[#2d1f47]/80 border-[#805ad5]/50 text-[#d6bcfa]', badge: 'bg-[#6b46c1] text-white' },
+        wallet: { label: 'Wallet', bg: 'bg-[#2a1a12]/80 border-[#8f633e]/50 text-[#f8efe3]', badge: 'bg-[#8f633e] text-white' },
+    };
+
+    const key = String(type || '').toLowerCase();
+    const config = typeConfig[key] || typeConfig.wallet;
+
+    return (
+        <div
+            onClick={onClick}
+            className={`group relative flex flex-col justify-between rounded-xl border p-4 shadow-lg backdrop-blur transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xl ${config.bg} cursor-pointer`}
+        >
+            <div className="flex items-center justify-between">
+                <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider ${config.badge}`}>
+                    {config.label}
+                </span>
+                <span className="text-xs font-bold uppercase tracking-wider text-[#d9c4ad]">{currency}</span>
+            </div>
+            <div className="mt-4">
+                <p className="truncate text-xs font-medium text-[#d9c4ad]">{name}</p>
+                <p className="mt-1 truncate text-xl font-black text-[#fff8ef]">{balance}</p>
+            </div>
+        </div>
+    );
+}
+

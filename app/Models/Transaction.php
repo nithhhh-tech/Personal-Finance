@@ -9,7 +9,7 @@ class Transaction extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'account_id', 'category_id', 'type', 'amount', 'currency', 'base_amount', 'exchange_rate', 'transaction_date', 'payment_method', 'description', 'tags', 'receipt_url'];
+    protected $fillable = ['user_id', 'account_id', 'category_id', 'sub_category_id', 'type', 'amount', 'currency', 'base_amount', 'exchange_rate', 'transaction_date', 'payment_method', 'description', 'tags', 'receipt_url'];
 
     protected function casts(): array
     {
@@ -19,4 +19,5 @@ class Transaction extends Model
     public function user() { return $this->belongsTo(User::class); }
     public function account() { return $this->belongsTo(Account::class); }
     public function category() { return $this->belongsTo(Category::class); }
+    public function subCategory() { return $this->belongsTo(Category::class, 'sub_category_id'); }
 }
